@@ -1,806 +1,633 @@
 <!DOCTYPE html>
-<html lang="hu" class="transition-colors duration-300">
+<html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Törtek</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .fraction-input input {
-            -moz-appearance: textfield;
-        }
-        .fraction-input input::-webkit-outer-spin-button,
-        .fraction-input input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .fraction-display {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            line-height: 1;
-            margin: 0 8px;
-        }
-        .fraction-line {
-            width: 100%;
-            border-bottom: 2px solid;
-            margin: 2px 0;
-            transition: border-color 0.3s ease;
-        }
-        .step-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-        }
-        .step-text {
-            margin-right: 16px;
-        }
-        .fraction-input-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            line-height: 1;
-            margin: 0 16px;
-        }
-        .fraction-input-group input {
-            width: 80px;
-            text-align: center;
-            padding: 4px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-        }
-        .fraction-input-group hr {
-            width: 100%;
-            border-top: 2px solid;
-            margin: 4px 0;
-            transition: border-color 0.3s ease;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Törtek műveletei (alap, haladó, egész számokkal, sötét/világos témával)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      font-family: "Fira Sans", Arial, sans-serif;
+      background: #eaf6ff;
+      color: #1a284f;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background: #1a284f;
+      color: #eaf6ff;
+    }
+    .theme-switcher {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #1564b3;
+      float: right;
+      margin-top: 0.5em;
+      margin-left: 1em;
+      transition: color 0.3s;
+    }
+    .theme-switcher:active {
+      color: #f3cb23;
+    }
+    .dark-mode .theme-switcher {
+      color: #f3cb23;
+    }
+    .math-icon {
+      font-size: 2rem;
+      line-height: 1;
+      margin-right: 10px;
+      color: #ffd700;
+      vertical-align: middle;
+    }
+    .dark-mode .math-icon {
+      color: #f3cb23;
+    }
+    .card {
+      background: #d2e7fa;
+      border: none;
+      margin-top: 2em;
+    }
+    .dark-mode .card {
+      background: #263a5e;
+      color: #eaf6ff;
+    }
+    .input-number, .input-expression {
+      font-size: 1.1em;
+      background: #fff;
+      color: #1a284f;
+      border: 1.5px solid #b8d5f9;
+      border-radius: 8px;
+      padding: 0.5em 0.8em;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode .input-number, .dark-mode .input-expression {
+      background: #1a284f;
+      color: #eaf6ff;
+      border-color: #08509b;
+    }
+    .btn-math {
+      font-size: 1.15em;
+      background: #1564b3;
+      color: #fff;
+      border-radius: 8px;
+      border: none;
+      margin-top: 0.8em;
+      box-shadow: 0 2px 8px rgba(21,100,179,0.09);
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-math:hover, .btn-math:focus {
+      background: #08509b;
+      color: #f3cb23;
+    }
+    .dark-mode .btn-math {
+      background: #263a5e;
+      color: #f3cb23;
+    }
+    .dark-mode .btn-math:hover, .dark-mode .btn-math:focus {
+      background: #08509b;
+      color: #ffd700;
+    }
+    .switch-label {
+      font-size: 1em;
+      color: #1564b3;
+      font-weight: 500;
+      margin-bottom: 0.2em;
+    }
+    .dark-mode .switch-label {
+      color: #ffd700;
+    }
+    .switch-toggle {
+      width: 46px;
+      height: 26px;
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 10px;
+    }
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #b8d5f9;
+      transition: .4s;
+      border-radius: 26px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: #fff;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background: #08509b;
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    .dark-mode .slider {
+      background: #08509b;
+    }
+    .dark-mode .slider:before {
+      background: #ffd700;
+    }
+    #steps {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 2px solid #b8d5f9;
+    }
+    .dark-mode #steps {
+      border-top: 2px solid #08509b;
+    }
+    .step-box {
+      padding: 1em;
+      background: #f7f8fa;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      color: #1a284f;
+      border-left: 4px solid #1564b3;
+    }
+    .dark-mode .step-box {
+      background: #263a5e;
+      color: #eaf6ff;
+      border-left: 4px solid #ffd700;
+    }
+    .result-box {
+      padding: 1em;
+      background: #1564b3;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 1em;
+    }
+    .dark-mode .result-box {
+      background: #ffd700;
+      color: #1a284f;
+    }
+    .exponent-box {
+      padding: 1em;
+      background: #f7f8fa;
+      border-radius: 8px;
+      color: #1564b3;
+      margin-bottom: 1em;
+    }
+    .dark-mode .exponent-box {
+      background: #263a5e;
+      color: #ffd700;
+    }
+    .error-box {
+      color: #c2001a;
+      font-weight: bold;
+      padding: 1em;
+      background: #ffe3e3;
+      border-radius: 8px;
+      margin-bottom: 1em;
+    }
+    .dark-mode .error-box {
+      color: #ff6f61;
+      background: #2d1a2a;
+    }
+    .fraction-display {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+      margin: 0 8px;
+    }
+    .fraction-line {
+      width: 100%;
+      border-bottom: 2px solid;
+      margin: 2px 0;
+      transition: border-color 0.3s ease;
+    }
+    .step-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+  </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 transition-colors duration-300">
-    <div class="p-8 rounded-xl shadow-2xl w-full max-w-2xl relative transition-colors duration-300">
-        
-        <!-- Téma váltó gomb -->
-        <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full shadow-md hover:scale-105 transition-transform duration-200" title="Váltás a sötét és világos mód között">
-            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0015.354 20.354z" />
-            </svg>
-        </button>
-
-        <h1 class="text-3xl font-bold mb-6 text-center">Törtek</h1>
-
-        <!-- Módválasztó kapcsoló -->
-        <div class="flex items-center justify-center mb-6">
-            <span id="basic-mode-label" class="mr-3 font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-300">Alap mód</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="mode-toggle">
-                <span class="slider"></span>
-            </label>
-            <span id="advanced-mode-label" class="ml-3 font-semibold text-gray-400 dark:text-gray-500 transition-colors duration-300">Haladó mód</span>
-        </div>
-        
-        <!-- Alap mód inputok -->
-        <div id="basic-mode-inputs">
-            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
-                <div class="fraction-input-group">
-                    <input type="number" id="numerator1" placeholder="Számláló" value="2" class="focus:outline-none focus:ring-2 focus:ring-blue-500 transition border-gray-300">
-                    <hr id="hr1">
-                    <input type="number" id="denominator1" placeholder="Nevező" value="8" class="focus:outline-none focus:ring-2 focus:ring-blue-500 transition border-gray-300">
-                </div>
-                <div class="flex-shrink-0">
-                    <select id="operation" class="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                        <option value="add">+</option>
-                        <option value="subtract">-</option>
-                        <option value="multiply">*</option>
-                        <option value="divide">/</option>
-                    </select>
-                </div>
-                <div class="fraction-input-group">
-                    <input type="number" id="numerator2" placeholder="Számláló" value="1" class="focus:outline-none focus:ring-2 focus:ring-500 transition border-gray-300">
-                    <hr id="hr2">
-                    <input type="number" id="denominator2" placeholder="Nevező" value="4" class="focus:outline-none focus:ring-2 focus:ring-500 transition border-gray-300">
-                </div>
-            </div>
-        </div>
-        
-        <!-- Haladó mód input -->
-        <div id="advanced-mode-input" class="hidden mb-6">
-            <input type="text" id="advanced-expression" placeholder="Írd be a kifejezést, pl: 1/2 + 3/4" value="(2/8-1/4)*(1/7-1/2)-2" class="w-full p-4 border-2 rounded-lg text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
-        </div>
-
-        <button onclick="calculate()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 mb-6">
-            Számítás indítása
-        </button>
-
-        <div id="steps" class="space-y-4"></div>
-
-        <!-- Új szöveges rész a lap alján -->
-        <p id="footer-text" class="text-center mt-6 text-gray-700 dark:text-gray-300">Csongo®</p>
+<body>
+  <div class="container py-3">
+    <button class="theme-switcher" id="themeBtn" onclick="toggleTheme()" title="Sötét/Világos váltás">
+      <span id="icon-sun" style="display:inline;">
+        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/>
+          <g>
+            <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2"/>
+            <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+            <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="2"/>
+            <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+          </g>
+        </svg>
+      </span>
+      <span id="icon-moon" style="display:none;">
+        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 0111.21 3a1 1 0 00-1.12 1.24A7 7 0 0012 21a7 7 0 009.76-8.67 1 1 0 00-1.24-1.12z" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      </span>
+    </button>
+    <div class="d-flex align-items-center mb-3">
+      <span class="math-icon">𝑥</span>
+      <h1 class="math-title mb-0">Törtek műveletei</h1>
+      <span class="math-icon">÷</span>
+      <span class="math-icon">+</span>
+      <span class="math-icon">-</span>
     </div>
+    <div class="card p-4 shadow-sm mx-auto" style="max-width: 700px;">
+      <div class="d-flex align-items-center justify-content-center mb-3">
+        <span class="switch-label me-2">Alap mód</span>
+        <label class="switch-toggle">
+          <input type="checkbox" id="mode-toggle" onchange="toggleMode()">
+          <span class="slider"></span>
+        </label>
+        <span class="switch-label ms-2">Haladó mód</span>
+      </div>
+      <!-- Alap mód inputok -->
+      <div id="basic-mode-inputs">
+        <div class="row mb-3 g-2 justify-content-center">
+          <div class="col-6 col-md-3 text-center">
+            <input type="number" id="numerator1" placeholder="Számláló" value="2" class="input-number mb-1 w-100">
+            <div><hr id="hr1" style="margin:2px 0;border-top:2px solid #1564b3;"></div>
+            <input type="number" id="denominator1" placeholder="Nevező" value="8" class="input-number w-100">
+          </div>
+          <div class="col-auto d-flex align-items-center justify-content-center">
+            <select id="operation" class="input-number bg-white text-dark w-auto">
+              <option value="add">+</option>
+              <option value="subtract">-</option>
+              <option value="multiply">*</option>
+              <option value="divide">/</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3 text-center">
+            <input type="number" id="numerator2" placeholder="Számláló" value="1" class="input-number mb-1 w-100">
+            <div><hr id="hr2" style="margin:2px 0;border-top:2px solid #1564b3;"></div>
+            <input type="number" id="denominator2" placeholder="Nevező" value="4" class="input-number w-100">
+          </div>
+        </div>
+      </div>
+      <!-- Haladó mód input -->
+      <div id="advanced-mode-input" class="d-none mb-3">
+        <input type="text" id="advanced-expression" placeholder="Írd be a kifejezést, pl: 1/2 + 3/4" value="(2/8-1/4)*(1/7-1/2)-2" class="input-expression w-100 mb-2">
+      </div>
+      <button onclick="calculate()" type="button" class="btn btn-math w-100 mb-3">Számítás indítása</button>
+      <div id="steps"></div>
+    </div>
+    <div class="mt-4 text-center">
+      <p class="mt-4 text-sm text-secondary">Csongo®</p>
+    </div>
+  </div>
+  <script>
+    // Sötét/világos téma váltó
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      document.getElementById('icon-sun').style.display = isDark ? 'none' : 'inline';
+      document.getElementById('icon-moon').style.display = isDark ? 'inline' : 'none';
+      updateStepsTheme(isDark);
+    }
+    window.onload = function() {
+      if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('icon-sun').style.display = 'none';
+        document.getElementById('icon-moon').style.display = 'inline';
+      }
+    };
 
-    <script>
-        // Function to find the greatest common divisor (Legnagyobb közös osztó)
-        function gcd(a, b) {
-            return b === 0 ? a : gcd(b, a % b);
-        }
-        
-        // Function to find the least common multiple (Legkisebb közös többszörös)
-        function lcm(a, b) {
-            if (a === 0 || b === 0) return 0;
-            return Math.abs(a * b) / gcd(a, b);
-        }
+    // Tört műveletek segédfüggvények
+    function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+    function lcm(a, b) { if (a === 0 || b === 0) return 0; return Math.abs(a * b) / gcd(a, b); }
+    function simplify(numerator, denominator) {
+      if (denominator === 0) throw new Error('A nevező nem lehet nulla!');
+      if (numerator === 0) return [0, 1];
+      const commonDivisor = gcd(Math.abs(numerator), Math.abs(denominator));
+      const simplifiedNumerator = numerator / commonDivisor;
+      const simplifiedDenominator = denominator / commonDivisor;
+      if (simplifiedDenominator < 0) return [-simplifiedNumerator, -simplifiedDenominator];
+      return [simplifiedNumerator, simplifiedDenominator];
+    }
 
-        // Function to simplify a fraction (Tört egyszerűsítése)
-        function simplify(numerator, denominator) {
-            if (denominator === 0) {
-                 throw new Error('A nevező nem lehet nulla!');
-            }
-            if (numerator === 0) {
-                return [0, 1];
-            }
-            const commonDivisor = gcd(Math.abs(numerator), Math.abs(denominator));
-            const simplifiedNumerator = numerator / commonDivisor;
-            const simplifiedDenominator = denominator / commonDivisor;
-            
-            // Ensures the sign is in the numerator
-            if (simplifiedDenominator < 0) {
-                return [-simplifiedNumerator, -simplifiedDenominator];
-            }
-
-            return [simplifiedNumerator, simplifiedDenominator];
-        }
-
-        // Helper function to create a vertical fraction element
-        function createFractionElement(numerator, denominator) {
-            const fractionDiv = document.createElement('div');
-            fractionDiv.className = 'fraction-display';
-            fractionDiv.innerHTML = `<span class="fraction-text">${numerator}</span><span class="fraction-line"></span><span class="fraction-text">${denominator}</span>`;
-            return fractionDiv;
-        }
-
-        // Helper function to create an operation symbol element
-        function createOperationElement(operation) {
-            const opMap = { 'add': '+', 'subtract': '-', 'multiply': '×', 'divide': '÷', '+': '+', '-': '-', '*': '×', '/': '÷', '=': '=' };
-            const opSpan = document.createElement('span');
-
-            opSpan.className = 'text-3xl font-light mx-2';
-            opSpan.textContent = opMap[operation] || operation;
-            return opSpan;
-        }
-        
-        // Helper function to create a text node
-        function createTextElement(text) {
-            const textNode = document.createElement('span');
-            textNode.textContent = text;
-            textNode.className = 'text-3xl mx-1';
-            return textNode;
-        }
-
-        // Helper function to display an entire expression visually
-        function createExpressionElement(expression) {
-            const expressionDiv = document.createElement('div');
-            expressionDiv.className = 'step-container';
-            expression.forEach(part => {
-                if (typeof part === 'string') {
-                    if (['+', '-', '*', '/', '='].includes(part)) {
-                        expressionDiv.appendChild(createOperationElement(part));
-                    } else if (part === '(' || part === ')') {
-                         expressionDiv.appendChild(createTextElement(part));
-                    } else { // Handle integers and other strings
-                         expressionDiv.appendChild(createTextElement(part));
-                    }
-                } else {
-                     expressionDiv.appendChild(createFractionElement(part.num, part.den));
-                }
-            });
-            return expressionDiv;
-        }
-
-        // Function to display steps with a fade-in animation
-        async function displaySteps(steps) {
-            const stepsContainer = document.getElementById('steps');
-            stepsContainer.innerHTML = ''; // Clear previous steps
-            
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const stepBgColor = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
-            const stepTextColor = isDarkMode ? 'text-gray-200' : 'text-gray-700';
-            const errorBg = isDarkMode ? 'bg-red-900' : 'bg-red-100';
-
-            for (const step of steps) {
-                const stepDiv = document.createElement('div');
-                stepDiv.className = `step opacity-0 transition-opacity duration-700 ease-in-out p-4 rounded-lg shadow-md ${step.isError ? errorBg : stepBgColor} ${step.isError ? 'text-red-500' : stepTextColor}`;
-                
-                // Textual explanation
-                if (step.text) {
-                    const textDiv = document.createElement('div');
-                    textDiv.className = 'mb-2';
-                    textDiv.innerHTML = step.text;
-                    stepDiv.appendChild(textDiv);
-                }
-                
-                // Visual representation (if available)
-                if (step.visual) {
-                    const visualDiv = document.createElement('div');
-                    visualDiv.className = 'step-container';
-                    
-                    if(step.visual.expression) {
-                         const expressionElement = createExpressionElement(step.visual.expression);
-                         visualDiv.appendChild(expressionElement);
-                    }
-                    
-                    stepDiv.appendChild(visualDiv);
-                }
-                
-                stepsContainer.appendChild(stepDiv);
-                
-                await new Promise(resolve => setTimeout(resolve, 500));
-                stepDiv.classList.remove('opacity-0');
-            }
-            updateStepsTheme(isDarkMode); // Initial theme update for newly created steps
-        }
-        
-        // This function will store the last calculated steps
-        let lastSteps = null;
-
-        // Main calculation function
-        async function calculate() {
-            const modeToggle = document.getElementById('mode-toggle');
-            if (modeToggle.checked) {
-                await calculateAdvanced();
-            } else {
-                await calculateBasic();
-            }
-        }
-
-        // Basic mode calculation function
-        async function calculateBasic() {
-            let numerator1 = parseInt(document.getElementById('numerator1').value);
-            let denominator1 = parseInt(document.getElementById('denominator1').value);
-            let numerator2 = parseInt(document.getElementById('numerator2').value);
-            let denominator2 = parseInt(document.getElementById('denominator2').value);
-            const operation = document.getElementById('operation').value;
-
-            // Input validation
-            if (isNaN(numerator1) || isNaN(denominator1) || isNaN(numerator2) || isNaN(denominator2) || denominator1 === 0 || denominator2 === 0) {
-                const errorStep = {
-                    text: 'Kérjük, érvényes számokat adj meg! A nevező nem lehet nulla.',
-                    isError: true
-                };
-                lastSteps = [errorStep];
-                displaySteps(lastSteps);
-                return;
-            }
-            if (operation === 'divide' && numerator2 === 0) {
-                const errorStep = {
-                    text: 'Nullával nem lehet osztani!',
-                    isError: true
-                };
-                lastSteps = [errorStep];
-                displaySteps(lastSteps);
-                return;
-            }
-
-            const steps = [];
-            let resultNumerator, resultDenominator;
-            const opMap = { 'add': '+', 'subtract': '-', 'multiply': '×', 'divide': '÷' };
-            const initialExpression = [{num: numerator1, den: denominator1}, opMap[operation], {num: numerator2, den: denominator2}];
-
-            // Initial step
-            steps.push({
-                text: `Kiinduló feladat:`,
-                visual: { expression: initialExpression }
-            });
-
-            // Simplify fractions at the beginning if possible
-            const [simplifiedNum1, simplifiedDen1] = simplify(numerator1, denominator1);
-            if (simplifiedNum1 !== numerator1 || simplifiedDen1 !== denominator1) {
-                steps.push({
-                    text: `Egyszerűsítjük az első törtet:`,
-                    visual: { expression: [{num: numerator1, den: denominator1}, '=', {num: simplifiedNum1, den: simplifiedDen1}] }
-                });
-                numerator1 = simplifiedNum1;
-                denominator1 = simplifiedDen1;
-            }
-
-            const [simplifiedNum2, simplifiedDen2] = simplify(numerator2, denominator2);
-            if (simplifiedNum2 !== numerator2 || simplifiedDen2 !== denominator2) {
-                steps.push({
-                    text: `Egyszerűsítjük a második törtet:`,
-                    visual: { expression: [{num: numerator2, den: denominator2}, '=', {num: simplifiedNum2, den: simplifiedDen2}] }
-                });
-                numerator2 = simplifiedNum2;
-                denominator2 = simplifiedDen2;
-            }
-
-            // After simplification, display the new expression if changes occurred
-            if (simplifiedNum1 !== parseInt(document.getElementById('numerator1').value) || simplifiedDen1 !== parseInt(document.getElementById('denominator1').value) || simplifiedNum2 !== parseInt(document.getElementById('numerator2').value) || simplifiedDen2 !== parseInt(document.getElementById('denominator2').value)) {
-                steps.push({
-                    text: `Az egyszerűsítés után a feladat:`,
-                    visual: { expression: [{num: numerator1, den: denominator1}, opMap[operation], {num: numerator2, den: denominator2}] }
-                });
-            }
-
-            switch (operation) {
-                case 'add':
-                case 'subtract':
-                    // Finding the least common multiple (Legkisebb közös többszörös)
-                    let commonDenominator = lcm(denominator1, denominator2);
-                    let newNumerator1 = numerator1;
-                    let newNumerator2 = numerator2;
-                    let explanationText = "";
-
-                    if (denominator1 % denominator2 === 0) {
-                        const multiplier = denominator1 / denominator2;
-                        newNumerator2 = numerator2 * multiplier;
-                        commonDenominator = denominator1;
-                        explanationText = `Mivel az első tört nevezője, ${denominator1}, osztható a második nevezővel, ${denominator2}-vel, elegendő csak a második törtet bővíteni. A közös nevező ${commonDenominator}.`;
-                    } else if (denominator2 % denominator1 === 0) {
-                         const multiplier = denominator2 / denominator1;
-                         newNumerator1 = numerator1 * multiplier;
-                         commonDenominator = denominator2;
-                         explanationText = `Mivel a második tört nevezője, ${denominator2}, osztható az első nevezővel, ${denominator1}-gyel, elegendő csak az első törtet bővíteni. A közös nevező ${commonDenominator}.`;
-                    } else {
-                        const multiplier1 = commonDenominator / denominator1;
-                        const multiplier2 = commonDenominator / denominator2;
-                        newNumerator1 = numerator1 * multiplier1;
-                        newNumerator2 = numerator2 * multiplier2;
-                        explanationText = `Művelet elvégzéséhez közös nevezőre hozzuk a törteket. A közös nevező a nevezők legkisebb közös többszöröse, ami ${commonDenominator}.`;
-                    }
-
-                    steps.push({
-                        text: explanationText,
-                        visual: { expression: [{num: newNumerator1, den: commonDenominator}, opMap[operation], {num: newNumerator2, den: commonDenominator}] }
-                    });
-
-                    if (operation === 'add') {
-                        resultNumerator = newNumerator1 + newNumerator2;
-                        steps.push({
-                            text: `Összeadás: a számlálókat összeadjuk. A nevező változatlan marad.`,
-                            visual: { expression: [{num: `${newNumerator1} + ${newNumerator2}`, den: commonDenominator}, '=', {num: resultNumerator, den: commonDenominator}] }
-                        });
-                    } else { // subtract
-                        resultNumerator = newNumerator1 - newNumerator2;
-                        steps.push({
-                            text: `Kivonás: a számlálókat kivonjuk egymásból. A nevező változatlan marad.`,
-                            visual: { expression: [{num: `${newNumerator1} - ${newNumerator2}`, den: commonDenominator}, '=', {num: resultNumerator, den: commonDenominator}] }
-                        });
-                    }
-                    resultDenominator = commonDenominator;
-                    break;
-
-                case 'multiply':
-                    resultNumerator = numerator1 * numerator2;
-                    resultDenominator = denominator1 * denominator2;
-                    steps.push({
-                        text: `Szorzásnál a számlálókat és a nevezőket külön szorozzuk össze.`,
-                        visual: { expression: [{num: numerator1, den: denominator1}, '×', {num: numerator2, den: denominator2}, '=', {num: resultNumerator, den: resultDenominator}] }
-                    });
-                    break;
-
-                case 'divide':
-                    resultNumerator = numerator1 * denominator2;
-                    resultDenominator = denominator1 * numerator2;
-                    steps.push({
-                        text: `Osztásnál az első törtet megszorozzuk a második tört reciprokával.`,
-                        visual: { expression: [{num: numerator1, den: denominator1}, '×', {num: denominator2, den: numerator2}] }
-                    });
-                    steps.push({
-                        text: `Elvégezzük a szorzást.`,
-                        visual: { expression: [{num: `${numerator1} × ${denominator2}`, den: `${denominator1} × ${numerator2}`}, '=', {num: resultNumerator, den: resultDenominator}] }
-                    });
-                    break;
-            }
-
-            const [simplifiedNumerator, simplifiedDenominator] = simplify(resultNumerator, resultDenominator);
-            let finalResultDisplay = {num: simplifiedNumerator, den: simplifiedDenominator};
-
-            if (resultNumerator !== simplifiedNumerator || resultDenominator !== simplifiedDenominator) {
-                const commonDivisor = gcd(Math.abs(resultNumerator), Math.abs(resultDenominator));
-                steps.push({
-                    text: `Az eredményt egyszerűsíthetjük a legnagyobb közös osztóval, ami ${commonDivisor}.`,
-                    visual: { expression: [{num: resultNumerator, den: resultDenominator}, '=', finalResultDisplay] }
-                });
-            }
-
-            steps.push({
-                text: `<span class="font-extrabold text-xl">Végeredmény:</span>`,
-                visual: { expression: [finalResultDisplay] }
-            });
-
-            lastSteps = steps;
-            await displaySteps(lastSteps);
-        }
-        
-        // Advanced mode calculation function
-        async function calculateAdvanced() {
-            const expressionStr = document.getElementById('advanced-expression').value.trim();
-            const steps = [];
-
-            // Tokenizes the input string into fractions, integers, and operators.
-            function tokenize(str) {
-                const tokens = [];
-                const regex = /(\d+\/\d+)|(\d+)|([+\-*/()])|(\s+)/g;
-                let match;
-                let lastIndex = 0;
-
-                while ((match = regex.exec(str)) !== null) {
-                    if (match.index > lastIndex) {
-                        throw new Error('Érvénytelen karakter a kifejezésben: ' + str.substring(lastIndex, match.index));
-                    }
-
-                    if (match[1]) { // Fraction
-                        const [num, den] = match[1].split('/').map(Number);
-                        if (den === 0) {
-                            throw new Error('A nevező nem lehet nulla!');
-                        }
-                        tokens.push({ num: num, den: den });
-                    } else if (match[2]) { // Integer
-                        tokens.push({ num: Number(match[2]), den: 1 });
-                    } else if (match[3]) { // Operator or parenthesis
-                        tokens.push(match[3]);
-                    }
-                    lastIndex = regex.lastIndex;
-                }
-                
-                if (lastIndex < str.length) {
-                    throw new Error('Érvénytelen kifejezés a végén: ' + str.substring(lastIndex));
-                }
-                
-                // Add implicit multiplication for cases like "2(3/4)"
-                const finalTokens = [];
-                for (let i = 0; i < tokens.length; i++) {
-                    finalTokens.push(tokens[i]);
-                    if (typeof tokens[i] === 'object' && tokens[i+1] === '(') {
-                        finalTokens.push('*');
-                    } else if (tokens[i] === ')' && typeof tokens[i+1] === 'object') {
-                        finalTokens.push('*');
-                    }
-                }
-                
-                // Check for invalid operator sequences
-                for (let i = 0; i < finalTokens.length - 1; i++) {
-                    const current = finalTokens[i];
-                    const next = finalTokens[i + 1];
-
-                    if (typeof current === 'object' && typeof next === 'object' && next !== '(') {
-                        throw new Error('Hiányzó operátor két szám között!');
-                    }
-                    
-                    if (typeof current === 'string' && ['+', '-', '*', '/'].includes(current) && typeof next === 'string' && ['+', '-', '*', '/'].includes(next)) {
-                        throw new Error('Két operátor nem állhat egymás mellett!');
-                    }
-                }
-
-                return finalTokens;
-            }
-
-            // Performs a single operation on two fractions
-            function performOperation(a, op, b) {
-                let resultNum, resultDen;
-                switch (op) {
-                    case '+':
-                        resultNum = a.num * (lcm(a.den, b.den) / a.den) + b.num * (lcm(a.den, b.den) / b.den);
-                        resultDen = lcm(a.den, b.den);
-                        break;
-                    case '-':
-                        resultNum = a.num * (lcm(a.den, b.den) / a.den) - b.num * (lcm(a.den, b.den) / b.den);
-                        resultDen = lcm(a.den, b.den);
-                        break;
-                    case '*':
-                        resultNum = a.num * b.num;
-                        resultDen = a.den * b.den;
-                        break;
-                    case '/':
-                        if (b.num === 0) {
-                            throw new Error('Nullával való osztás!');
-                        }
-                        resultNum = a.num * b.den;
-                        resultDen = a.den * b.num;
-                        break;
-                }
-                if (resultDen === 0) {
-                    throw new Error('A nevező nullára adódott a művelet során!');
-                }
-                const [simplifiedNum, simplifiedDen] = simplify(resultNum, resultDen);
-                return { num: simplifiedNum, den: simplifiedDen };
-            }
-            
-            // Gets the precedence of an operator
-            function getPrecedence(op) {
-                if (op === '*' || op === '/') return 2;
-                if (op === '+' || op === '-') return 1;
-                return 0; // for parentheses
-            }
-
-            // Evaluates an expression using the Shunting-yard algorithm logic
-            function evaluateExpression(tokens, steps) {
-                const values = []; // stack for numbers/fractions
-                const ops = [];    // stack for operators
-
-                function applyOp() {
-                    const op = ops.pop();
-                    const b = values.pop();
-                    const a = values.pop();
-                    
-                    const result = performOperation(a, op, b);
-                    values.push(result);
-                    
-                    // Record step
-                    const currentExpression = [...values, ...ops.reverse()];
-                    steps.push({
-                        text: `Elvégezzük a(z) '${op}' műveletet:`,
-                        visual: { expression: [a, op, b, '=', result] }
-                    });
-                }
-                
-                for (let token of tokens) {
-                    if (typeof token === 'object') { // It's a number/fraction
-                        values.push(token);
-                    } else if (token === '(') {
-                        ops.push(token);
-                    } else if (token === ')') {
-                        while (ops.length > 0 && ops[ops.length - 1] !== '(') {
-                            applyOp();
-                        }
-                        if (ops.length === 0 || ops[ops.length - 1] !== '(') {
-                            throw new Error('Helytelenül elhelyezett zárójel!');
-                        }
-                        ops.pop(); // pop the '('
-                    } else { // It's an operator
-                        while (ops.length > 0 && ops[ops.length - 1] !== '(' && getPrecedence(ops[ops.length - 1]) >= getPrecedence(token)) {
-                            applyOp();
-                        }
-                        ops.push(token);
-                    }
-                }
-                
-                while (ops.length > 0) {
-                    if (ops[ops.length-1] === '(') {
-                        throw new Error('Hiányzó zárójel!');
-                    }
-                    applyOp();
-                }
-                
-                if (values.length !== 1 || ops.length !== 0) {
-                    throw new Error('Érvénytelen kifejezés!');
-                }
-                
-                return values[0];
-            }
-            
-            try {
-                const tokens = tokenize(expressionStr);
-                
-                steps.push({ text: `Kiinduló kifejezés:`, visual: { expression: tokens } });
-                
-                const finalResult = evaluateExpression(tokens, steps);
-                
-                const [simplifiedNum, simplifiedDen] = simplify(finalResult.num, finalResult.den);
-                let finalResultDisplay = { num: simplifiedNum, den: simplifiedDen };
-                
-                if (finalResult.num !== simplifiedNum || finalResult.den !== simplifiedDen) {
-                    const commonDivisor = gcd(Math.abs(finalResult.num), Math.abs(finalResult.den));
-                    steps.push({
-                        text: `Végül egyszerűsítjük a végeredményt a legnagyobb közös osztóval, ami ${commonDivisor}.`,
-                        visual: { expression: [{num: finalResult.num, den: finalResult.den}, '=', finalResultDisplay] }
-                    });
-                }
-                
-                steps.push({
-                    text: `<span class="font-extrabold text-xl">Végeredmény:</span>`,
-                    visual: { expression: [finalResultDisplay] }
-                });
-
-            } catch (e) {
-                const errorStep = {
-                    text: `Hiba történt: ${e.message}`,
-                    isError: true
-                };
-                lastSteps = [errorStep];
-                displaySteps(lastSteps);
-                return;
-            }
-            
-            lastSteps = steps;
-            await displaySteps(lastSteps);
-        }
-
-        // A lépések stílusának frissítése a téma szerint
-        function updateStepsTheme(isDarkMode) {
-            const stepsContainer = document.getElementById('steps');
-            const stepDivs = stepsContainer.querySelectorAll('.step');
-            
-            stepDivs.forEach(stepDiv => {
-                const isError = stepDiv.classList.contains('bg-red-900') || stepDiv.classList.contains('bg-red-100');
-                if (isError) {
-                    stepDiv.classList.toggle('bg-red-100', !isDarkMode);
-                    stepDiv.classList.toggle('bg-red-900', isDarkMode);
-                } else {
-                    stepDiv.classList.toggle('bg-gray-50', !isDarkMode);
-                    stepDiv.classList.toggle('text-gray-700', !isDarkMode);
-                    stepDiv.classList.toggle('bg-gray-700', isDarkMode);
-                    stepDiv.classList.toggle('text-gray-200', isDarkMode);
-                }
-
-                const fractionLines = stepDiv.querySelectorAll('.fraction-line');
-                fractionLines.forEach(line => {
-                    line.classList.toggle('border-black', !isDarkMode);
-                    line.classList.toggle('border-gray-400', isDarkMode);
-                });
-                const fractionTexts = stepDiv.querySelectorAll('.fraction-display');
-                fractionTexts.forEach(text => {
-                    text.classList.toggle('text-gray-900', !isDarkMode);
-                    text.classList.toggle('text-gray-300', isDarkMode);
-                });
-                const operationTexts = stepDiv.querySelectorAll('.text-3xl');
-                operationTexts.forEach(text => {
-                    text.classList.toggle('text-gray-500', !isDarkMode);
-                    text.classList.toggle('text-gray-400', isDarkMode);
-                });
-            });
-        }
-
-        // Téma váltó logika és módváltó logika
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-        const sunIcon = document.getElementById('sun-icon');
-        const moonIcon = document.getElementById('moon-icon');
-        const body = document.body;
-        const mainContainer = document.querySelector('body > div');
-        const hr1 = document.getElementById('hr1');
-        const hr2 = document.getElementById('hr2');
-        const allInputs = document.querySelectorAll('input, select');
-        const h1Title = document.querySelector('h1');
-        const stepsContainer = document.getElementById('steps');
-        const footerText = document.getElementById('footer-text');
-        const modeToggle = document.getElementById('mode-toggle');
-        const basicModeInputs = document.getElementById('basic-mode-inputs');
-        const advancedModeInput = document.getElementById('advanced-mode-input');
-        const basicModeLabel = document.getElementById('basic-mode-label');
-        const advancedModeLabel = document.getElementById('advanced-mode-label');
-        const advancedExpressionInput = document.getElementById('advanced-expression');
-
-        function updateTheme() {
-            const isDarkMode = htmlElement.classList.contains('dark');
-            
-            body.classList.toggle('bg-gray-100', !isDarkMode);
-            body.classList.toggle('bg-gray-900', isDarkMode);
-            mainContainer.classList.toggle('bg-white', !isDarkMode);
-            mainContainer.classList.toggle('bg-gray-800', isDarkMode);
-            
-            themeToggle.classList.toggle('bg-gray-200', !isDarkMode);
-            themeToggle.classList.toggle('dark:bg-gray-700', isDarkMode);
-            themeToggle.classList.toggle('text-gray-800', !isDarkMode);
-            themeToggle.classList.toggle('dark:text-gray-200', isDarkMode);
-            
-            h1Title.classList.toggle('text-gray-800', !isDarkMode);
-            h1Title.classList.toggle('dark:text-gray-100', isDarkMode);
-
-            footerText.classList.toggle('text-gray-700', !isDarkMode);
-            footerText.classList.toggle('text-gray-300', isDarkMode);
-
-            basicModeLabel.classList.toggle('text-gray-700', !isDarkMode);
-            basicModeLabel.classList.toggle('dark:text-gray-300', isDarkMode);
-            advancedModeLabel.classList.toggle('text-gray-400', !isDarkMode);
-            advancedModeLabel.classList.toggle('dark:text-gray-500', isDarkMode);
-
-            allInputs.forEach(input => {
-                input.classList.toggle('bg-gray-100', !isDarkMode);
-                input.classList.toggle('dark:bg-gray-700', isDarkMode);
-                input.classList.toggle('text-gray-900', !isDarkMode);
-                input.classList.toggle('dark:text-gray-200', isDarkMode);
-            });
-            document.getElementById('operation').classList.toggle('bg-white', !isDarkMode);
-            document.getElementById('operation').classList.toggle('dark:bg-gray-700', isDarkMode);
-            document.getElementById('operation').classList.toggle('text-gray-700', !isDarkMode);
-            document.getElementById('operation').classList.toggle('dark:text-gray-200', isDarkMode);
-            
-            hr1.classList.toggle('border-black', !isDarkMode);
-            hr1.classList.toggle('border-gray-400', isDarkMode);
-            hr2.classList.toggle('border-black', !isDarkMode);
-            hr2.classList.toggle('border-gray-400', isDarkMode);
-
-            if (isDarkMode) {
-                moonIcon.classList.remove('hidden');
-                sunIcon.classList.add('hidden');
-            } else {
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            }
-            
-            if (lastSteps) {
-                updateStepsTheme(isDarkMode); 
-            }
-        }
-        
-        modeToggle.addEventListener('change', () => {
-            if (modeToggle.checked) {
-                basicModeInputs.classList.add('hidden');
-                advancedModeInput.classList.remove('hidden');
-                basicModeLabel.classList.remove('text-gray-700', 'dark:text-gray-300');
-                basicModeLabel.classList.add('text-gray-400', 'dark:text-gray-500');
-                advancedModeLabel.classList.remove('text-gray-400', 'dark:text-gray-500');
-                advancedModeLabel.classList.add('text-gray-700', 'dark:text-gray-300');
-                advancedExpressionInput.value = '(2/8-1/4)*(1/7-1/2)-2';
-                document.getElementById('steps').innerHTML = '';
-                lastSteps = null;
-            } else {
-                basicModeInputs.classList.remove('hidden');
-                advancedModeInput.classList.add('hidden');
-                basicModeLabel.classList.remove('text-gray-400', 'dark:text-gray-500');
-                basicModeLabel.classList.add('text-gray-700', 'dark:text-gray-300');
-                advancedModeLabel.classList.remove('text-gray-700', 'dark:text-gray-300');
-                advancedModeLabel.classList.add('text-gray-400', 'dark:text-gray-500');
-                document.getElementById('steps').innerHTML = '';
-                lastSteps = null;
-            }
-        });
-
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            htmlElement.classList.add('dark');
+    // Frakció megjelenítés
+    function createFractionElement(numerator, denominator) {
+      const fractionDiv = document.createElement('div');
+      fractionDiv.className = 'fraction-display';
+      fractionDiv.innerHTML = `<span class="fraction-text">${numerator}</span><span class="fraction-line"></span><span class="fraction-text">${denominator}</span>`;
+      return fractionDiv;
+    }
+    function createOperationElement(operation) {
+      const opMap = { 'add': '+', 'subtract': '-', 'multiply': '×', 'divide': '÷', '+': '+', '-': '-', '*': '×', '/': '÷', '=': '=' };
+      const opSpan = document.createElement('span');
+      opSpan.className = 'text-3xl font-light mx-2';
+      opSpan.textContent = opMap[operation] || operation;
+      return opSpan;
+    }
+    function createTextElement(text) {
+      const textNode = document.createElement('span');
+      textNode.textContent = text;
+      textNode.className = 'text-3xl mx-1';
+      return textNode;
+    }
+    function createExpressionElement(expression) {
+      const expressionDiv = document.createElement('div');
+      expressionDiv.className = 'step-container';
+      expression.forEach(part => {
+        if (typeof part === 'string') {
+          if (['+', '-', '*', '/', '='].includes(part)) {
+            expressionDiv.appendChild(createOperationElement(part));
+          } else if (part === '(' || part === ')') {
+            expressionDiv.appendChild(createTextElement(part));
+          } else {
+            expressionDiv.appendChild(createTextElement(part));
+          }
         } else {
-            htmlElement.classList.remove('dark');
+          expressionDiv.appendChild(createFractionElement(part.num, part.den));
         }
-        updateTheme();
+      });
+      return expressionDiv;
+    }
+    async function displaySteps(steps) {
+      const stepsContainer = document.getElementById('steps');
+      stepsContainer.innerHTML = '';
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      for (const step of steps) {
+        const stepDiv = document.createElement('div');
+        stepDiv.className = `step-box${step.isError ? ' error-box' : ''}`;
+        if (step.text) {
+          const textDiv = document.createElement('div');
+          textDiv.className = 'mb-2';
+          textDiv.innerHTML = step.text;
+          stepDiv.appendChild(textDiv);
+        }
+        if (step.visual) {
+          const visualDiv = document.createElement('div');
+          visualDiv.className = 'step-container';
+          if(step.visual.expression) {
+            const expressionElement = createExpressionElement(step.visual.expression);
+            visualDiv.appendChild(expressionElement);
+          }
+          stepDiv.appendChild(visualDiv);
+        }
+        stepsContainer.appendChild(stepDiv);
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      updateStepsTheme(isDarkMode);
+    }
+    let lastSteps = null;
 
-        themeToggle.addEventListener('click', () => {
-            htmlElement.classList.toggle('dark');
-            if (htmlElement.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-            updateTheme();
+    async function calculate() {
+      const modeToggle = document.getElementById('mode-toggle');
+      if (modeToggle.checked) {
+        await calculateAdvanced();
+      } else {
+        await calculateBasic();
+      }
+    }
+    async function calculateBasic() {
+      let numerator1 = parseInt(document.getElementById('numerator1').value);
+      let denominator1 = parseInt(document.getElementById('denominator1').value);
+      let numerator2 = parseInt(document.getElementById('numerator2').value);
+      let denominator2 = parseInt(document.getElementById('denominator2').value);
+      const operation = document.getElementById('operation').value;
+      if (isNaN(numerator1) || isNaN(denominator1) || isNaN(numerator2) || isNaN(denominator2) || denominator1 === 0 || denominator2 === 0) {
+        lastSteps = [{text:'Kérjük, érvényes számokat adj meg! A nevező nem lehet nulla.',isError:true}];
+        displaySteps(lastSteps);
+        return;
+      }
+      if (operation === 'divide' && numerator2 === 0) {
+        lastSteps = [{text:'Nullával nem lehet osztani!',isError:true}];
+        displaySteps(lastSteps);
+        return;
+      }
+      const steps = [];
+      let resultNumerator, resultDenominator;
+      const opMap = { 'add': '+', 'subtract': '-', 'multiply': '×', 'divide': '÷' };
+      const initialExpression = [{num:numerator1,den:denominator1}, opMap[operation], {num:numerator2,den:denominator2}];
+      steps.push({text:'Kiinduló feladat:',visual:{expression:initialExpression}});
+      const [simplifiedNum1, simplifiedDen1] = simplify(numerator1, denominator1);
+      if (simplifiedNum1 !== numerator1 || simplifiedDen1 !== denominator1) {
+        steps.push({text:'Egyszerűsítjük az első törtet:',visual:{expression:[{num:numerator1,den:denominator1},'=',{num:simplifiedNum1,den:simplifiedDen1}]}});
+        numerator1 = simplifiedNum1; denominator1 = simplifiedDen1;
+      }
+      const [simplifiedNum2, simplifiedDen2] = simplify(numerator2, denominator2);
+      if (simplifiedNum2 !== numerator2 || simplifiedDen2 !== denominator2) {
+        steps.push({text:'Egyszerűsítjük a második törtet:',visual:{expression:[{num:numerator2,den:denominator2},'=',{num:simplifiedNum2,den:simplifiedDen2}]}});
+        numerator2 = simplifiedNum2; denominator2 = simplifiedDen2;
+      }
+      if (simplifiedNum1 !== parseInt(document.getElementById('numerator1').value) || simplifiedDen1 !== parseInt(document.getElementById('denominator1').value) || simplifiedNum2 !== parseInt(document.getElementById('numerator2').value) || simplifiedDen2 !== parseInt(document.getElementById('denominator2').value)) {
+        steps.push({text:'Az egyszerűsítés után a feladat:',visual:{expression:[{num:numerator1,den:denominator1},opMap[operation],{num:numerator2,den:denominator2}]}});
+      }
+      switch (operation) {
+        case 'add':
+        case 'subtract':
+          let commonDenominator = lcm(denominator1, denominator2);
+          let newNumerator1 = numerator1; let newNumerator2 = numerator2;
+          let explanationText = "";
+          if (denominator1 % denominator2 === 0) {
+            const multiplier = denominator1 / denominator2;
+            newNumerator2 = numerator2 * multiplier;
+            commonDenominator = denominator1;
+            explanationText = `Mivel az első tört nevezője, ${denominator1}, osztható a második nevezővel, ${denominator2}-vel, elegendő csak a második törtet bővíteni. A közös nevező: ${commonDenominator}`;
+          } else if (denominator2 % denominator1 === 0) {
+            const multiplier = denominator2 / denominator1;
+            newNumerator1 = numerator1 * multiplier;
+            commonDenominator = denominator2;
+            explanationText = `Mivel a második tört nevezője, ${denominator2}, osztható az első nevezővel, ${denominator1}-gyel, elegendő csak az első törtet bővíteni. A közös nevező: ${commonDenominator}`;
+          } else {
+            const multiplier1 = commonDenominator / denominator1;
+            const multiplier2 = commonDenominator / denominator2;
+            newNumerator1 = numerator1 * multiplier1;
+            newNumerator2 = numerator2 * multiplier2;
+            explanationText = `Művelet elvégzéséhez közös nevezőre hozzuk a törteket. A közös nevező a nevezők legkisebb közös többszöröse, ami ${commonDenominator}.`;
+          }
+          steps.push({text:explanationText,visual:{expression:[{num:newNumerator1,den:commonDenominator},opMap[operation],{num:newNumerator2,den:commonDenominator}]}});
+          if (operation === 'add') {
+            resultNumerator = newNumerator1 + newNumerator2;
+            steps.push({text:'Összeadás: a számlálókat összeadjuk. A nevező változatlan marad.',visual:{expression:[{num:`${newNumerator1} + ${newNumerator2}`,den:commonDenominator},'=',{num:resultNumerator,den:commonDenominator}]}});
+          } else {
+            resultNumerator = newNumerator1 - newNumerator2;
+            steps.push({text:'Kivonás: a számlálókat kivonjuk egymásból. A nevező változatlan marad.',visual:{expression:[{num:`${newNumerator1} - ${newNumerator2}`,den:commonDenominator},'=',{num:resultNumerator,den:commonDenominator}]}});
+          }
+          resultDenominator = commonDenominator;
+          break;
+        case 'multiply':
+          resultNumerator = numerator1 * numerator2;
+          resultDenominator = denominator1 * denominator2;
+          steps.push({text:'Szorzásnál a számlálókat és a nevezőket külön szorozzuk össze.',visual:{expression:[{num:numerator1,den:denominator1},'×',{num:numerator2,den:denominator2},'=',{num:resultNumerator,den:resultDenominator}]}});
+          break;
+        case 'divide':
+          resultNumerator = numerator1 * denominator2;
+          resultDenominator = denominator1 * numerator2;
+          steps.push({text:'Osztásnál az első törtet megszorozzuk a második tört reciprokával.',visual:{expression:[{num:numerator1,den:denominator1},'×',{num:denominator2,den:numerator2}]}});
+          steps.push({text:'Elvégezzük a szorzást.',visual:{expression:[{num:`${numerator1} × ${denominator2}`,den:`${denominator1} × ${numerator2}`},'=',{num:resultNumerator,den:resultDenominator}]}});
+          break;
+      }
+      const [simplifiedNumerator, simplifiedDenominator] = simplify(resultNumerator, resultDenominator);
+      let finalResultDisplay = {num:simplifiedNumerator,den:simplifiedDenominator};
+      if (resultNumerator !== simplifiedNumerator || resultDenominator !== simplifiedDenominator) {
+        const commonDivisor = gcd(Math.abs(resultNumerator), Math.abs(resultDenominator));
+        steps.push({text:`Az eredményt egyszerűsíthetjük a legnagyobb közös osztóval, ami ${commonDivisor}.`,visual:{expression:[{num:resultNumerator,den:resultDenominator},'=',finalResultDisplay]}});
+      }
+      steps.push({text:'<span class="fw-bold fs-5">Végeredmény:</span>',visual:{expression:[finalResultDisplay]}});
+      lastSteps = steps;
+      await displaySteps(lastSteps);
+    }
+    async function calculateAdvanced() {
+      const expressionStr = document.getElementById('advanced-expression').value.trim();
+      const steps = [];
+      function tokenize(str) {
+        const tokens = [];
+        const regex = /(\d+\/\d+)|(\d+)|([+\-*/()])|(\s+)/g;
+        let match; let lastIndex = 0;
+        while ((match = regex.exec(str)) !== null) {
+          if (match.index > lastIndex) throw new Error('Érvénytelen karakter a kifejezésben: ' + str.substring(lastIndex, match.index));
+          if (match[1]) {
+            const [num, den] = match[1].split('/').map(Number);
+            if (den === 0) throw new Error('A nevező nem lehet nulla!');
+            tokens.push({ num: num, den: den });
+          } else if (match[2]) {
+            tokens.push({ num: Number(match[2]), den: 1 });
+          } else if (match[3]) {
+            tokens.push(match[3]);
+          }
+          lastIndex = regex.lastIndex;
+        }
+        if (lastIndex < str.length) throw new Error('Érvénytelen kifejezés a végén: ' + str.substring(lastIndex));
+        const finalTokens = [];
+        for (let i = 0; i < tokens.length; i++) {
+          finalTokens.push(tokens[i]);
+          if (typeof tokens[i] === 'object' && tokens[i+1] === '(') finalTokens.push('*');
+          else if (tokens[i] === ')' && typeof tokens[i+1] === 'object') finalTokens.push('*');
+        }
+        for (let i = 0; i < finalTokens.length - 1; i++) {
+          const current = finalTokens[i];
+          const next = finalTokens[i + 1];
+          if (typeof current === 'object' && typeof next === 'object' && next !== '(') throw new Error('Hiányzó operátor két szám között!');
+          if (typeof current === 'string' && ['+', '-', '*', '/'].includes(current) && typeof next === 'string' && ['+', '-', '*', '/'].includes(next)) throw new Error('Két operátor nem állhat egymás mellett!');
+        }
+        return finalTokens;
+      }
+      function performOperation(a, op, b) {
+        let resultNum, resultDen;
+        switch (op) {
+          case '+':
+            resultNum = a.num * (lcm(a.den, b.den) / a.den) + b.num * (lcm(a.den, b.den) / b.den);
+            resultDen = lcm(a.den, b.den);
+            break;
+          case '-':
+            resultNum = a.num * (lcm(a.den, b.den) / a.den) - b.num * (lcm(a.den, b.den) / b.den);
+            resultDen = lcm(a.den, b.den);
+            break;
+          case '*':
+            resultNum = a.num * b.num;
+            resultDen = a.den * b.den;
+            break;
+          case '/':
+            if (b.num === 0) throw new Error('Nullával való osztás!');
+            resultNum = a.num * b.den;
+            resultDen = a.den * b.num;
+            break;
+        }
+        if (resultDen === 0) throw new Error('A nevező nullára adódott a művelet során!');
+        const [simplifiedNum, simplifiedDen] = simplify(resultNum, resultDen);
+        return { num: simplifiedNum, den: simplifiedDen };
+      }
+      function getPrecedence(op) { if (op === '*' || op === '/') return 2; if (op === '+' || op === '-') return 1; return 0; }
+      function evaluateExpression(tokens, steps) {
+        const values = []; const ops = [];
+        function applyOp() {
+          const op = ops.pop();
+          const b = values.pop();
+          const a = values.pop();
+          const result = performOperation(a, op, b);
+          values.push(result);
+          steps.push({text:`Elvégezzük a(z) '${op}' műveletet:`,visual:{expression:[a,op,b,'=',result]}});
+        }
+        for (let token of tokens) {
+          if (typeof token === 'object') values.push(token);
+          else if (token === '(') ops.push(token);
+          else if (token === ')') {
+            while (ops.length > 0 && ops[ops.length - 1] !== '(') applyOp();
+            if (ops.length === 0 || ops[ops.length - 1] !== '(') throw new Error('Helytelenül elhelyezett zárójel!');
+            ops.pop();
+          } else {
+            while (ops.length > 0 && ops[ops.length - 1] !== '(' && getPrecedence(ops[ops.length - 1]) >= getPrecedence(token)) applyOp();
+            ops.push(token);
+          }
+        }
+        while (ops.length > 0) {
+          if (ops[ops.length-1] === '(') throw new Error('Hiányzó zárójel!');
+          applyOp();
+        }
+        if (values.length !== 1 || ops.length !== 0) throw new Error('Érvénytelen kifejezés!');
+        return values[0];
+      }
+      try {
+        const tokens = tokenize(expressionStr);
+        steps.push({text:'Kiinduló kifejezés:',visual:{expression:tokens}});
+        const finalResult = evaluateExpression(tokens, steps);
+        const [simplifiedNum, simplifiedDen] = simplify(finalResult.num, finalResult.den);
+        let finalResultDisplay = { num: simplifiedNum, den: simplifiedDen };
+        if (finalResult.num !== simplifiedNum || finalResult.den !== simplifiedDen) {
+          const commonDivisor = gcd(Math.abs(finalResult.num), Math.abs(finalResult.den));
+          steps.push({text:`Végül egyszerűsítjük a végeredményt a legnagyobb közös osztóval, ami ${commonDivisor}.`,visual:{expression:[{num:finalResult.num,den:finalResult.den},'=',finalResultDisplay]}});
+        }
+        steps.push({text:'<span class="fw-bold fs-5">Végeredmény:</span>',visual:{expression:[finalResultDisplay]}});
+      } catch (e) {
+        lastSteps = [{text:`Hiba történt: ${e.message}`,isError:true}];
+        displaySteps(lastSteps);
+        return;
+      }
+      lastSteps = steps;
+      await displaySteps(lastSteps);
+    }
+
+    // Módváltó logika
+    function toggleMode() {
+      const modeToggle = document.getElementById('mode-toggle');
+      const basicModeInputs = document.getElementById('basic-mode-inputs');
+      const advancedModeInput = document.getElementById('advanced-mode-input');
+      if (modeToggle.checked) {
+        basicModeInputs.classList.add('d-none');
+        advancedModeInput.classList.remove('d-none');
+        document.getElementById('steps').innerHTML = '';
+        lastSteps = null;
+      } else {
+        basicModeInputs.classList.remove('d-none');
+        advancedModeInput.classList.add('d-none');
+        document.getElementById('steps').innerHTML = '';
+        lastSteps = null;
+      }
+    }
+
+    // Lépesek stílusának frissítése a téma szerint
+    function updateStepsTheme(isDarkMode) {
+      const stepsContainer = document.getElementById('steps');
+      const stepDivs = stepsContainer.querySelectorAll('.step-box');
+      stepDivs.forEach(stepDiv => {
+        stepDiv.classList.toggle('dark-mode', isDarkMode);
+        const fractionLines = stepDiv.querySelectorAll('.fraction-line');
+        fractionLines.forEach(line => {
+          line.style.borderColor = isDarkMode ? '#ffd700' : '#1564b3';
         });
-    </script>
+      });
+    }
+  </script>
 </body>
 </html>
