@@ -8,10 +8,17 @@
   <style>
     html, body {
       height: 100%;
+      margin: 0;
+      padding: 0;
       font-family: "Fira Sans", Arial, sans-serif;
       background: #eaf6ff;
       color: #1a284f;
       transition: background 0.3s, color 0.3s;
+    }
+    body, .main-content {
+      height: 100%;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
     body.dark-mode {
       background: #1a284f;
@@ -69,30 +76,39 @@
       color: #f3cb23;
     }
     .main-content {
-      padding: 32px 10px 0 10px;
-      min-height: 70vh;
-      box-sizing: border-box;
-    }
-    iframe {
-      width: 100%;
-      height: 65vh;
-      border: 2px solid #d2e7fa;
-      border-radius: 6px;
-      background: #fff;
-      transition: border-color 0.3s;
-    }
-    .dark-mode iframe {
-      border-color: #263a5e;
-      background: #1a284f;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 60px); /* 60px: navbar magasság */
+      padding: 0;
+      margin: 0;
     }
     .desc {
       font-size: 1.1em;
-      margin-bottom: 18px;
+      margin: 18px 0 12px 0;
+      text-align: center;
+    }
+    #materialFrame {
+      flex: 1 1 auto;
+      width: 100%;
+      border: 2px solid #d2e7fa;
+      border-radius: 6px;
+      background: #fff;
+      min-height: 0;
+      transition: border-color 0.3s;
+      display: none;
+    }
+    .dark-mode #materialFrame {
+      border-color: #263a5e;
+      background: #1a284f;
+    }
+    @media (max-width: 600px) {
+      .main-content {
+        height: calc(100vh - 56px);
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Felső navigációs sáv -->
   <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container-fluid">
       <span class="math-icon">∑</span>
@@ -119,7 +135,6 @@
         </ul>
         <button class="theme-switcher" id="themeBtn" onclick="toggleTheme()" title="Sötét/Világos váltás">
           <span id="icon-sun" style="display:inline;">
-            <!-- Nap ikon -->
             <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/>
               <g>
@@ -135,7 +150,6 @@
             </svg>
           </span>
           <span id="icon-moon" style="display:none;">
-            <!-- Hold ikon -->
             <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
               <path d="M21 12.79A9 9 0 0111.21 3a1 1 0 00-1.12 1.24A7 7 0 0012 21a7 7 0 009.76-8.67 1 1 0 00-1.24-1.12z" stroke="currentColor" stroke-width="2" fill="none"/>
             </svg>
@@ -144,15 +158,12 @@
       </div>
     </div>
   </nav>
-
-  <!-- Tartalomterület -->
   <div class="main-content">
     <div class="desc">
       Válassz egy matematika témát a felső menüből!
     </div>
-    <iframe id="materialFrame" src="" title="Matematika anyag" style="display:none;"></iframe>
+    <iframe id="materialFrame" src="" title="Matematika anyag"></iframe>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     function openMaterial(file) {
@@ -166,7 +177,6 @@
       document.getElementById('icon-sun').style.display = isDark ? 'none' : 'inline';
       document.getElementById('icon-moon').style.display = isDark ? 'inline' : 'none';
     }
-    // Automatikus téma a felhasználó gépe alapján
     window.onload = function() {
       if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.body.classList.add('dark-mode');
