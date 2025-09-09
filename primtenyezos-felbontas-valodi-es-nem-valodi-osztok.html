@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="hu" class="dark transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prímtényezős Felbontás</title>
+    <!-- Tailwind CSS beállítása a modern és reszponzív kinézetért -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A fő betűtípus beállítása */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen bg-gray-900 text-gray-100">
+
+    <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-lg transition-colors duration-300">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-blue-400">
+            Prímtényezős felbontás
+        </h1>
+
+        <!-- A beviteli mező konténere -->
+        <div class="space-y-4 mb-6">
+            <div class="input-group">
+                <label for="number" class="block font-semibold mb-1 text-gray-300">
+                    Szám:
+                </label>
+                <input type="number" id="number" value="18" min="2" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
+            </div>
+        </div>
+        
+        <!-- A "Számolás" gomb -->
+        <button onclick="calculatePrimeFactors()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+            Számolás
+        </button>
+        
+        <!-- Az eredmények megjelenítésének helye -->
+        <div id="result" class="mt-8 pt-6 border-t-2 border-gray-700">
+            <!-- Ide kerülnek a lépések -->
+        </div>
+    </div>
+
+    <!-- Csongor felirat -->
+    <div class="mt-8 text-center">
+        <p class="mt-4 text-sm text-gray-400">Csongor</p>
+    </div>
+
+    <script>
+        /**
+         * Kiszámítja és megjeleníti egy szám prímtényezős felbontását lépésenként.
+         */
+        function calculatePrimeFactors() {
+            // Beolvassa a felhasználó által megadott számot
+            let number = parseInt(document.getElementById('number').value);
+            const originalNumber = number;
+            const resultDiv = document.getElementById('result');
+            
+            // Törli az előző eredményeket
+            resultDiv.innerHTML = '';
+
+            // Kezeli az érvénytelen bemeneteket
+            if (isNaN(number) || number < 2) {
+                resultDiv.innerHTML = `<div class="p-4 bg-red-900 text-red-200 rounded-lg">Kérjük, adjon meg egy 2-nél nagyobb egész számot.</div>`;
+                return;
+            }
+
+            const factors = [];
+            let divisor = 2;
+            let stepCounter = 1;
+
+            // Első lépés: a folyamat elindítása
+            const introStep = document.createElement('div');
+            introStep.className = 'p-4 bg-blue-900 bg-opacity-30 rounded-lg border-l-4 border-blue-400 mb-4';
+            introStep.innerHTML = `
+                <strong class="text-blue-200">1. lépés: Induljunk!</strong><br>
+                A ${originalNumber} számot fogjuk prímtényezőkre bontani. Mindig a legkisebb prímszámmal próbáljuk osztani.
+            `;
+            resultDiv.appendChild(introStep);
+            
+            // A prímtényezők keresése
+            while (number > 1) {
+                // Ellenőrzi, hogy a szám osztható-e az aktuális osztóval
+                if (number % divisor === 0) {
+                    factors.push(divisor);
+                    const remaining = number / divisor;
+                    
+                    // Összeállítja a felbontás aktuális állását
+                    let factorizationString = factors.join(' &times; ');
+                    if (remaining > 1) {
+                        factorizationString += ' &times; ' + remaining;
+                    }
+                    
+                    const iterationStep = document.createElement('div');
+                    iterationStep.className = 'p-4 bg-gray-700 rounded-lg border-l-4 border-gray-600 mb-4';
+                    iterationStep.innerHTML = `
+                        <strong class="text-gray-200">${stepCounter + 1}. lépés: Osztás ${divisor}-val</strong><br>
+                        A(z) ${number} osztható ${divisor}-vel. <br>
+                        A felbontás jelenlegi állása: <br>
+                        ${originalNumber} = ${factorizationString}
+                    `;
+                    resultDiv.appendChild(iterationStep);
+                    
+                    number = remaining;
+                    stepCounter++;
+                } else {
+                    // Ha a szám nem osztható, megpróbálja a következő prímszámot
+                    if (divisor === 2) {
+                        divisor++; // 2 után a következő prímszám a 3
+                    } else {
+                        divisor += 2; // Innentől csak páratlan számokat kell vizsgálni
+                    }
+                }
+            }
+            
+            // Végleges eredmények megjelenítése
+            
+            // Ha a szám prímszám
+            if (factors.length === 1) {
+                const primeMessageDiv = document.createElement('div');
+                primeMessageDiv.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold';
+                primeMessageDiv.innerHTML = `
+                    <strong class="text-blue-200">Eredmény</strong><br>
+                    A(z) <span class="text-xl">${originalNumber}</span> egy **prímszám**, ezért nem bontható tovább.
+                `;
+                resultDiv.appendChild(primeMessageDiv);
+            } else {
+                // A hagyományos formátum
+                const finalResultStep = document.createElement('div');
+                finalResultStep.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold mb-4';
+                finalResultStep.innerHTML = `
+                    <strong class="text-blue-200">Végleges felbontás</strong><br>
+                    A ${originalNumber} prímtényezős felbontása: <br>
+                    <span class="text-xl">${factors.join(' &times; ')}</span>
+                `;
+                resultDiv.appendChild(finalResultStep);
+
+                // A hatványozott formátum
+                const finalResultExponentStep = document.createElement('div');
+                finalResultExponentStep.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold';
+                
+                // Elkészíti a hatványozott formátumot
+                const factorCounts = {};
+                factors.forEach(factor => {
+                    factorCounts[factor] = (factorCounts[factor] || 0) + 1;
+                });
+
+                let exponentString = originalNumber + ' = ';
+                let firstFactor = true;
+                for (const factor in factorCounts) {
+                    if (!firstFactor) {
+                        exponentString += ' &times; ';
+                    }
+                    exponentString += factor;
+                    if (factorCounts[factor] > 1) {
+                        exponentString += '<sup>' + factorCounts[factor] + '</sup>';
+                    }
+                    firstFactor = false;
+                }
+                
+                finalResultExponentStep.innerHTML = `
+                    <strong class="text-blue-200">Hatványozással felírva</strong><br>
+                    <span class="text-xl">${exponentString}</span>
+                `;
+                resultDiv.appendChild(finalResultExponentStep);
+            }
+
+            // Osztók számítása és megjelenítése
+            const divisors = [];
+            for (let i = 1; i <= originalNumber; i++) {
+                if (originalNumber % i === 0) {
+                    divisors.push(i);
+                }
+            }
+
+            const improperDivisors = [1, originalNumber];
+            const properDivisors = divisors.filter(d => d !== 1 && d !== originalNumber);
+
+            // Valódi osztók megjelenítése
+            const properDivisorsDiv = document.createElement('div');
+            properDivisorsDiv.className = 'p-4 bg-gray-700 rounded-lg border-l-4 border-gray-600 mt-4';
+            properDivisorsDiv.innerHTML = `
+                <strong class="text-gray-200">Valódi osztók</strong><br>
+                ${properDivisors.length > 0 ? properDivisors.join(', ') : 'Nincsenek'}
+            `;
+            resultDiv.appendChild(properDivisorsDiv);
+
+            // Nem valódi osztók megjelenítése
+            const improperDivisorsDiv = document.createElement('div');
+            improperDivisorsDiv.className = 'p-4 bg-gray-700 rounded-lg border-l-4 border-gray-600 mt-4';
+            improperDivisorsDiv.innerHTML = `
+                <strong class="text-gray-200">Nem valódi osztók</strong><br>
+                ${improperDivisors.join(', ')}
+            `;
+            resultDiv.appendChild(improperDivisorsDiv);
+
+            // Összes osztó számának megjelenítése
+            const totalDivisorsDiv = document.createElement('div');
+            totalDivisorsDiv.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold mt-4';
+            totalDivisorsDiv.innerHTML = `
+                <strong class="text-blue-200">Összes osztó száma</strong><br>
+                A(z) ${originalNumber} számnak összesen <span class="text-xl">${divisors.length}</span> osztója van.
+            `;
+            resultDiv.appendChild(totalDivisorsDiv);
+        }
+    </script>
+</body>
+</html>

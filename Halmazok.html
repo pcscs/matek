@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)file:///C:/Users/Csongor/Downloads/halmazok_calc_hu%20(8).html -->
+<html lang="hu"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Halmazkalkulátor (magyar, pontos Venn-diagram)</title>
+  <style>
+    body{font-family:system-ui;max-width:900px;margin:auto;padding:20px;background:#f7f9fc}
+    textarea{width:100%;height:60px;margin-bottom:10px}
+    canvas{background:white;border:1px solid #ccc;margin-top:12px;}
+    .error{color:red;font-weight:bold;}
+  </style>
+</head>
+<body>
+<h1>Halmazkalkulátor</h1>
+<label>Alaphalmaz (U)</label>
+<textarea id="setU" placeholder="alma, körte, banán, narancs, szilva"></textarea>
+<label>A halmaz</label>
+<textarea id="setA" placeholder="alma, körte, banán"></textarea>
+<label>B halmaz</label>
+<textarea id="setB" placeholder="banán, narancs"></textarea>
+<div>
+  <label><input type="radio" name="op" value="union" checked=""> Egyesítés (A ∪ B)</label>
+  <label><input type="radio" name="op" value="intersection"> Metszet (A ∩ B)</label>
+  <label><input type="radio" name="op" value="diffAB"> Különbség (A \\ B)</label>
+  <label><input type="radio" name="op" value="diffBA"> Különbség (B \\ A)</label>
+  <label><input type="radio" name="op" value="symdiff"> Szimmetrikus különbség (A △ B)</label>
+  <label><input type="radio" name="op" value="compA"> Komplementer (A')</label>
+  <label><input type="radio" name="op" value="compB"> Komplementer (B')</label>
+</div>
+<button id="compute">Számol + Rajzol</button>
+<div id="error" class="error"></div>
+<div id="result">l, s</div>
+<canvas id="vennCanvas" width="500" height="300"></canvas>
+<script>
+  function parseElements(txt){return txt.split(/[,;]+/).map(s=>s.trim()).filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);}
+  const union=(a,b)=>[...new Set([...a,...b])];
+  const intersection=(a,b)=>a.filter(x=>b.includes(x));
+  const difference=(a,b)=>a.filter(x=>!b.includes(x));
+  const symdiff=(a,b)=>union(difference(a,b),difference(b,a));
+  const complement=(u,a)=>difference(u,a);
+
+  function drawVenn(U,A,B){
+    const ctx=document.getElementById('vennCanvas').getContext('2d');
+    ctx.clearRect(0,0,500,300);
+    const ax=200, ay=150, bx=300, by=150, r=100;
+    ctx.globalAlpha=0.2; ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(ax,ay,r,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle='blue'; ctx.beginPath(); ctx.arc(bx,by,r,0,2*Math.PI); ctx.fill();
+    ctx.globalAlpha=1; ctx.font='14px sans-serif'; ctx.fillStyle='#000';
+
+    const onlyA=difference(A,B);
+    const onlyB=difference(B,A);
+    const both=intersection(A,B);
+    const outside=difference(U,union(A,B));
+
+    onlyA.forEach((el,i)=>ctx.fillText(el, ax-70, ay-30+i*16));
+    both.forEach((el,i)=>ctx.fillText(el, ax+15, ay-30+i*16));
+    onlyB.forEach((el,i)=>ctx.fillText(el, bx+50, by-30+i*16));
+    outside.forEach((el,i)=>ctx.fillText(el, 20, 30+i*16));
+
+    ctx.fillText('A', ax-10, ay-110);
+    ctx.fillText('B', bx-10, by-110);
+    ctx.fillText('U\\(A∪B)', 20, 20);
+  }
+
+  function filterByU(set, U){
+    return set.filter(x=>U.includes(x));
+  }
+
+  document.getElementById('compute').addEventListener('click',()=>{
+    const U=parseElements(document.getElementById('setU').value);
+    let A=parseElements(document.getElementById('setA').value);
+    let B=parseElements(document.getElementById('setB').value);
+
+    // Ellenőrzés és szűrés
+    const invalidA=A.filter(x=>!U.includes(x));
+    const invalidB=B.filter(x=>!U.includes(x));
+    if(invalidA.length || invalidB.length){
+      document.getElementById('error').textContent=`Hiba: Csak az alaphalmaz elemei adhatók meg. (Hibás A elemek: ${invalidA.join(', ')}; Hibás B elemek: ${invalidB.join(', ')})`;
+      return;
+    } else {
+      document.getElementById('error').textContent='';
+    }
+
+    A=filterByU(A,U);
+    B=filterByU(B,U);
+
+    const op=document.querySelector('input[name="op"]:checked').value;
+    let res=[];
+    if(op==='union') res=union(A,B);
+    else if(op==='intersection') res=intersection(A,B);
+    else if(op==='diffAB') res=difference(A,B);
+    else if(op==='diffBA') res=difference(B,A);
+    else if(op==='symdiff') res=symdiff(A,B);
+    else if(op==='compA') res=complement(U,A);
+    else if(op==='compB') res=complement(U,B);
+    document.getElementById('result').textContent=res.length?res.join(', '):'∅';
+    drawVenn(U,A,B);
+  });
+</script>
+
+
+</body></html>

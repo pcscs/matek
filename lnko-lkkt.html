@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="hu" class="dark transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKKT és LNKO</title>
+    <!-- Tailwind CSS beállítása a modern és reszponzív kinézetért -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A fő betűtípus beállítása */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen bg-gray-900 text-gray-100">
+
+    <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-lg transition-colors duration-300">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-blue-400">
+            LKKT és LNKO 
+        </h1>
+
+        <!-- A beviteli mezők konténere -->
+        <div id="input-container" class="space-y-4 mb-4">
+            <div class="flex items-center space-x-2">
+                <input type="number" value="18" min="2" class="number-input w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
+            </div>
+            <div class="flex items-center space-x-2">
+                <input type="number" value="12" min="2" class="number-input w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
+            </div>
+        </div>
+
+        <!-- A további mező hozzáadására szolgáló gomb -->
+        <button id="add-input-btn" class="w-full bg-blue-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-900 transition duration-300 shadow-md mb-6">
+            további szám felvétele
+        </button>
+        
+        <!-- A "Számolás" gomb -->
+        <button onclick="calculate()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+            Számolás
+        </button>
+        
+        <!-- Az eredmények megjelenítésének helye -->
+        <div id="result" class="mt-8 pt-6 border-t-2 border-gray-700">
+            <!-- Ide kerülnek a felbontások és az eredmények -->
+        </div>
+    </div>
+
+    <!-- Csongor felirat -->
+    <div class="mt-8 text-center">
+        <p class="mt-4 text-sm text-gray-400">Csongor</p>
+    </div>
+
+    <script>
+        /**
+         * Kiszámítja egy szám prímtényezős felbontását egy Map objektumba.
+         * @param {number} n - A szám, amit felbontunk.
+         * @returns {Map<number, number>} A prímtényezők és a hatványaik.
+         */
+        function getPrimeFactorization(n) {
+            const factors = new Map();
+            let divisor = 2;
+            let tempN = n;
+
+            while (tempN > 1) {
+                if (tempN % divisor === 0) {
+                    factors.set(divisor, (factors.get(divisor) || 0) + 1);
+                    tempN /= divisor;
+                } else {
+                    if (divisor === 2) {
+                        divisor++;
+                    } else {
+                        divisor += 2;
+                    }
+                }
+            }
+            return factors;
+        }
+
+        /**
+         * Létrehoz egy olvasható stringet a prímtényezős felbontásból.
+         * @param {number} originalNumber - Az eredeti szám.
+         * @param {Map<number, number>} factors - A prímtényezők Map objektuma.
+         * @returns {string} A formázott felbontás string.
+         */
+        function formatPrimeFactorization(originalNumber, factors) {
+            if (factors.size === 1 && factors.get(originalNumber) === 1) {
+                return `${originalNumber} egy prímszám.`;
+            }
+
+            let exponentString = originalNumber + ' = ';
+            let firstFactor = true;
+            for (const [factor, exponent] of factors.entries()) {
+                if (!firstFactor) {
+                    exponentString += ' &times; ';
+                }
+                exponentString += factor;
+                if (exponent > 1) {
+                    exponentString += '<sup>' + exponent + '</sup>';
+                }
+                firstFactor = false;
+            }
+            return exponentString;
+        }
+        
+        /**
+         * Létrehoz egy olvasható stringet a prímtényezős hatványozott alakból.
+         * @param {Map<number, number>} factors - A prímtényezők Map objektuma.
+         * @returns {string} A formázott felbontás string.
+         */
+        function formatExponents(factors) {
+            if (factors.size === 0) {
+                return '1';
+            }
+            let exponentString = '';
+            let firstFactor = true;
+            for (const [factor, exponent] of factors.entries()) {
+                if (!firstFactor) {
+                    exponentString += ' &times; ';
+                }
+                exponentString += factor;
+                if (exponent > 1) {
+                    exponentString += '<sup>' + exponent + '</sup>';
+                }
+                firstFactor = false;
+            }
+            return exponentString;
+        }
+
+        /**
+         * Hozzáad egy új beviteli mezőt a felülethez.
+         */
+        function addInput() {
+            const inputContainer = document.getElementById('input-container');
+            const newInputDiv = document.createElement('div');
+            newInputDiv.className = 'flex items-center space-x-2';
+            newInputDiv.innerHTML = `
+                <input type="number" min="2" class="number-input w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
+                <button onclick="this.parentNode.remove()" class="bg-red-600 text-white font-bold py-1 px-3 rounded-lg hover:bg-red-700 transition duration-300 shadow-md">-</button>
+            `;
+            inputContainer.appendChild(newInputDiv);
+        }
+
+        // A '+' gomb eseményfigyelője
+        document.getElementById('add-input-btn').addEventListener('click', addInput);
+
+        /**
+         * Kiszámítja és megjeleníti az LNKO-t és az LKKT-t.
+         */
+        function calculate() {
+            const numberInputs = document.querySelectorAll('.number-input');
+            const numbers = Array.from(numberInputs)
+                                 .map(input => parseInt(input.value))
+                                 .filter(n => !isNaN(n) && n >= 2);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            // Ellenőrzi, hogy van-e legalább két érvényes szám
+            if (numbers.length < 2) {
+                resultDiv.innerHTML = `<div class="p-4 bg-red-900 text-red-200 rounded-lg">Kérjük, adjon meg legalább két 2-nél nagyobb számot!</div>`;
+                return;
+            }
+
+            // Prímtényezős felbontások kiszámítása és megjelenítése
+            const allFactorizations = numbers.map(n => getPrimeFactorization(n));
+            const factorizationHtml = document.createElement('div');
+            factorizationHtml.className = 'mb-6';
+            factorizationHtml.innerHTML = `
+                <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-blue-300">Prímtényezős felbontás</h2>
+            `;
+            numbers.forEach((num, index) => {
+                const factors = allFactorizations[index];
+                const factorizationString = formatPrimeFactorization(num, factors);
+                const p = document.createElement('p');
+                p.className = 'p-3 bg-gray-700 rounded-lg mb-2';
+                p.innerHTML = factorizationString;
+                factorizationHtml.appendChild(p);
+            });
+            resultDiv.appendChild(factorizationHtml);
+
+            // Összes prímtényező összegyűjtése és maximális hatványaik meghatározása (LKKT-hez)
+            const allPrimeFactors = new Map();
+            allFactorizations.forEach(factors => {
+                for (const [factor, exponent] of factors.entries()) {
+                    allPrimeFactors.set(factor, Math.max(allPrimeFactors.get(factor) || 0, exponent));
+                }
+            });
+
+            // Közös prímtényezők összegyűjtése és minimális hatványaik meghatározása (LNKO-hoz)
+            const commonPrimeFactors = new Map();
+            const firstFactorization = allFactorizations[0];
+            for (const [factor, exponent] of firstFactorization.entries()) {
+                let isCommon = true;
+                let minExponent = exponent;
+                for (let i = 1; i < allFactorizations.length; i++) {
+                    const currentFactors = allFactorizations[i];
+                    if (!currentFactors.has(factor)) {
+                        isCommon = false;
+                        break;
+                    }
+                    minExponent = Math.min(minExponent, currentFactors.get(factor));
+                }
+                if (isCommon) {
+                    commonPrimeFactors.set(factor, minExponent);
+                }
+            }
+            
+            // LNKO és LKKT kiszámítása
+            let lnko = 1;
+            for (const [factor, exponent] of commonPrimeFactors.entries()) {
+                lnko *= Math.pow(factor, exponent);
+            }
+
+            let lkkt = 1;
+            for (const [factor, exponent] of allPrimeFactors.entries()) {
+                lkkt *= Math.pow(factor, exponent);
+            }
+            
+            // Eredmények megjelenítése
+            const finalResultHtml = document.createElement('div');
+            finalResultHtml.className = 'mt-6';
+
+            // LNKO és LKKT kiírása prímtényezős alakban és értékkel
+            finalResultHtml.innerHTML += `
+                <div class="p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold mb-4">
+                    <strong class="text-blue-200">Eredmény</strong><br>
+                    LNKO = ${formatExponents(commonPrimeFactors)} = ${lnko}<br>
+                    LKKT = ${formatExponents(allPrimeFactors)} = ${lkkt}
+                </div>
+            `;
+            
+            // Relatív prímek ellenőrzése és kiírása
+            if (lnko === 1) {
+                finalResultHtml.innerHTML += `
+                    <div class="p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold mb-4">
+                        <strong class="text-blue-200">Megjegyzés:</strong><br>
+                        A megadott számok **relatív prímek**, mivel legnagyobb közös osztójuk 1.
+                    </div>
+                `;
+            }
+
+            resultDiv.appendChild(finalResultHtml);
+
+            // Magyarázatok megjelenítése a végén
+            const explanationHtml = document.createElement('div');
+            explanationHtml.className = 'mt-6';
+            explanationHtml.innerHTML = `
+                <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-blue-300">Magyarázat</h2>
+                <div class="p-4 bg-gray-700 rounded-lg mb-4">
+                    <strong class="text-gray-200">Az LNKO (legnagyobb közös osztó) kiszámítása:</strong><br>
+                    Az összes szám prímtényezős felbontásából azokat a prímszámokat kell kiválasztani, amelyek <span class="text-blue-400 font-bold">közös prímszámok</span>. Ezekből a közös prímtényezőkből a <span class="text-blue-400 font-bold">legkisebb hatványon</span> lévőt kell venni, és ezeket összeszorozni.
+                </div>
+                <div class="p-4 bg-gray-700 rounded-lg mb-4">
+                    <strong class="text-gray-200">Az LKKT (legkisebb közös többszörös) kiszámítása:</strong><br>
+                    Az összes prímtényezős felbontásban szereplő <span class="text-blue-400 font-bold">összes különböző prímszámot</span> meg kell keresni. Ezek közül a prímszámok közül a <span class="text-blue-400 font-bold">legnagyobb hatványon</span> lévőt kell venni, és ezeket összeszorozni.
+                </div>
+            `;
+            resultDiv.appendChild(explanationHtml);
+        }
+    </script>
+</body>
+</html>
