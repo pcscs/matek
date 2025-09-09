@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- A sötét téma alapértelmezett beállítása -->
+<html lang="hu" class="dark transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osztásos Négyzetgyökvonás</title>
+    <!-- Tailwind CSS beállítása a modern és reszponzív kinézetért -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A fő betűtípus beállítása */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<!-- A test sötét háttérrel és világos szöveggel -->
+<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen bg-gray-900 text-gray-100">
+
+    <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-lg transition-colors duration-300">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-blue-400">
+            Osztásos Négyzetgyökvonás
+        </h1>
+
+        <!-- A beviteli mezők konténere -->
+        <div class="space-y-4 mb-6">
+            <div class="input-group">
+                <label for="number" class="block font-semibold mb-1 text-gray-300">
+                    Szám (S):
+                </label>
+                <input type="number" id="number" value="10" step="0.01" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
+            </div>
+            
+            <div class="input-group">
+                <label for="iterations" class="block font-semibold mb-1 text-gray-300">
+                    Iterációk száma:
+                </label>
+                <input type="number" id="iterations" value="5" min="1" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
+            </div>
+        </div>
+        
+        <!-- A "Számolás" gomb -->
+        <button onclick="calculateSquareRoot()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+            Számolás
+        </button>
+        
+        <!-- Az eredmények megjelenítésének helye -->
+        <div id="result" class="mt-8 pt-6 border-t-2 border-gray-700">
+            <!-- Ide kerülnek a lépések -->
+        </div>
+    </div>
+
+    <!-- Csongor felirat -->
+    <div class="mt-8 text-center">
+        <p class="mt-4 text-sm text-gray-400">Csongor</p>
+    </div>
+
+    <script>
+        /**
+         * Kiszámítja és megjeleníti a négyzetgyököt az osztásos módszerrel.
+         */
+        function calculateSquareRoot() {
+            // Beolvassa a felhasználó által megadott számot és iterációk számát
+            const S = parseFloat(document.getElementById('number').value);
+            const numIterations = parseInt(document.getElementById('iterations').value);
+            const resultDiv = document.getElementById('result');
+            
+            // Törli az előző eredményeket
+            resultDiv.innerHTML = '';
+
+            // Kezelje az érvénytelen bemeneteket
+            if (isNaN(S) || S < 0 || isNaN(numIterations) || numIterations < 1) {
+                resultDiv.innerHTML = `<div class="p-4 bg-red-900 text-red-200 rounded-lg">Kérjük, adjon meg érvényes, pozitív számot és iterációk számát.</div>`;
+                return;
+            }
+
+            // Kezdeti becslés (Newton-Raphson módszer esetén)
+            let x = S / 2;
+            if (x === 0) x = 1; // Kerülje a nullával való osztást
+
+            // Kezdő becslés megjelenítése
+            const initialGuessStep = document.createElement('div');
+            initialGuessStep.className = 'p-4 bg-blue-900 bg-opacity-30 rounded-lg border-l-4 border-blue-400 mb-4';
+            initialGuessStep.innerHTML = `
+                <strong class="text-blue-200">1. lépés: Kezdeti becslés</strong><br>
+                A képlet: x<sub>n+1</sub> = (1/2) * (x<sub>n</sub> + S / x<sub>n</sub>). Kezdő becslésünk x<sub>0</sub> = ${x.toFixed(6).replace('.', ',')}.
+            `;
+            resultDiv.appendChild(initialGuessStep);
+
+            // Iterációk futtatása
+            for (let i = 0; i < numIterations; i++) {
+                const S_divided_by_x = S / x;
+                const next_x = 0.5 * (x + S_divided_by_x);
+
+                const iterationStep = document.createElement('div');
+                iterationStep.className = 'p-4 bg-gray-700 rounded-lg border-l-4 border-gray-600 mb-4';
+                iterationStep.innerHTML = `
+                    <strong class="text-gray-200">${i + 2}. lépés: ${i + 1}. iteráció</strong><br>
+                    x<sub>${i+1}</sub> = (1/2) * ( ${x.toFixed(6).replace('.', ',')} + ${S.toFixed(2).replace('.', ',')} / ${x.toFixed(6).replace('.', ',')} )<br>
+                    x<sub>${i+1}</sub> = (1/2) * ( ${x.toFixed(6).replace('.', ',')} + ${S_divided_by_x.toFixed(6).replace('.', ',')} )<br>
+                    x<sub>${i+1}</sub> = ${next_x.toFixed(6).replace('.', ',')}
+                `;
+                resultDiv.appendChild(iterationStep);
+                
+                // Frissíti az 'x' értékét a következő iterációhoz
+                x = next_x;
+            }
+            
+            // Végleges eredmény megjelenítése
+            const finalResultStep = document.createElement('div');
+            finalResultStep.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold';
+            finalResultStep.innerHTML = `
+                <strong class="text-blue-200">Végleges becslés</strong><br>
+                ${numIterations} iteráció után a(z) ${S.toFixed(2).replace('.', ',')} négyzetgyöke körülbelül: <br>
+                <span class="text-xl">${x.toFixed(6).replace('.', ',')}</span>
+            `;
+            resultDiv.appendChild(finalResultStep);
+        }
+    </script>
+</body>
+</html>
