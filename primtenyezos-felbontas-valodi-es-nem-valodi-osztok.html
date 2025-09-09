@@ -6,46 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     html, body {
+      min-height: 100%;
       height: 100%;
-      font-family: "Fira Sans", Arial, sans-serif;
       background: #eaf6ff;
       color: #1a284f;
+      font-family: "Fira Sans", Arial, sans-serif;
       transition: background 0.3s, color 0.3s;
     }
-    body.dark-mode {
-      background: #1a284f;
+    body.dark-mode, html.dark-mode {
+      background: #1a284f !important;
       color: #eaf6ff;
-    }
-    .theme-switcher {
-      border: none;
-      background: none;
-      cursor: pointer;
-      font-size: 1.5rem;
-      color: #1564b3;
-      float: right;
-      margin-top: 0.5em;
-      margin-left: 1em;
-      transition: color 0.3s;
-    }
-    .theme-switcher:active {
-      color: #f3cb23;
-    }
-    .dark-mode .theme-switcher {
-      color: #f3cb23;
-    }
-    .math-icon {
-      font-size: 2rem;
-      line-height: 1;
-      margin-right: 10px;
-      color: #ffd700;
-      vertical-align: middle;
-    }
-    .dark-mode .math-icon {
-      color: #f3cb23;
     }
     .card {
       background: #d2e7fa;
@@ -57,7 +30,7 @@
       color: #eaf6ff;
     }
     .input-number {
-      font-size: 1.15em;
+      font-size: 1.1em;
       background: #fff;
       color: #1a284f;
       border: 1.5px solid #b8d5f9;
@@ -92,13 +65,17 @@
       background: #08509b;
       color: #ffd700;
     }
-    #result {
-      margin-top: 28px;
-      padding-top: 16px;
-      border-top: 2px solid #b8d5f9;
+    .error-box {
+      color: #c2001a;
+      font-weight: bold;
+      padding: 1em;
+      background: #ffe3e3;
+      border-radius: 8px;
+      margin-bottom: 1em;
     }
-    .dark-mode #result {
-      border-top: 2px solid #08509b;
+    .dark-mode .error-box {
+      color: #ff6f61;
+      background: #2d1a2a;
     }
     .step-box {
       padding: 1em;
@@ -125,76 +102,16 @@
       background: #ffd700;
       color: #1a284f;
     }
-    .exponent-box {
-      padding: 1em;
-      background: #f7f8fa;
-      border-radius: 8px;
-      color: #1564b3;
-      margin-bottom: 1em;
-    }
-    .dark-mode .exponent-box {
-      background: #263a5e;
-      color: #ffd700;
-    }
-    .divisors-box {
-      padding: 1em;
-      background: #eaf6ff;
-      border-radius: 8px;
-      margin-bottom: 1em;
-      color: #1564b3;
-      border-left: 4px solid #1564b3;
-    }
-    .dark-mode .divisors-box {
-      background: #263a5e;
-      color: #ffd700;
-      border-left: 4px solid #ffd700;
-    }
-    .error-box {
-      color: #c2001a;
-      font-weight: bold;
-      padding: 1em;
-      background: #ffe3e3;
-      border-radius: 8px;
-      margin-bottom: 1em;
-    }
-    .dark-mode .error-box {
-      color: #ff6f61;
-      background: #2d1a2a;
-    }
   </style>
 </head>
 <body>
   <div class="container py-3">
-    <button class="theme-switcher" id="themeBtn" onclick="toggleTheme()" title="Sötét/Világos váltás">
-      <span id="icon-sun" style="display:inline;">
-        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/>
-          <g>
-            <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
-            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
-            <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2"/>
-            <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
-            <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
-            <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
-            <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="2"/>
-            <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
-          </g>
-        </svg>
-      </span>
-      <span id="icon-moon" style="display:none;">
-        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M21 12.79A9 9 0 0111.21 3a1 1 0 00-1.12 1.24A7 7 0 0012 21a7 7 0 009.76-8.67 1 1 0 00-1.24-1.12z" stroke="currentColor" stroke-width="2" fill="none"/>
-        </svg>
-      </span>
-    </button>
-    <div class="d-flex align-items-center mb-3">
-      <span class="math-icon">𝑛</span>
-      <h1 class="math-title mb-0">Prímtényezős felbontás</h1>
-      <span class="math-icon">÷</span>
-    </div>
     <div class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
-      <label for="number" class="form-label fw-bold mb-2">Szám:</label>
-      <input type="number" id="number" value="18" min="2" class="input-number w-100 mb-3">
+      <h1 class="mb-3 text-center">Prímtényezős felbontás</h1>
+      <div class="mb-3">
+        <label for="number" class="fw-bold mb-2">Szám:</label>
+        <input type="number" id="number" value="18" min="2" class="input-number w-100 mb-2">
+      </div>
       <button onclick="calculatePrimeFactors()" type="button" class="btn btn-math w-100 mb-2">Számolás</button>
       <div id="result"></div>
     </div>
@@ -203,37 +120,18 @@
     </div>
   </div>
   <script>
-    // Sötét/világos téma váltó
-    function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-      const isDark = document.body.classList.contains('dark-mode');
-      document.getElementById('icon-sun').style.display = isDark ? 'none' : 'inline';
-      document.getElementById('icon-moon').style.display = isDark ? 'inline' : 'none';
-    }
-    window.onload = function() {
-      if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark-mode');
-        document.getElementById('icon-sun').style.display = 'none';
-        document.getElementById('icon-moon').style.display = 'inline';
-      }
-    };
-
     function calculatePrimeFactors() {
       let number = parseInt(document.getElementById('number').value);
       const originalNumber = number;
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = '';
-
       if (isNaN(number) || number < 2) {
         resultDiv.innerHTML = `<div class="error-box">Kérjük, adjon meg egy 2-nél nagyobb egész számot.</div>`;
         return;
       }
-
       const factors = [];
       let divisor = 2;
       let stepCounter = 1;
-
-      // Első lépés: a folyamat elindítása
       const introStep = document.createElement('div');
       introStep.className = 'step-box';
       introStep.innerHTML = `
@@ -241,18 +139,12 @@
         A ${originalNumber} számot fogjuk prímtényezőkre bontani. Mindig a legkisebb prímszámmal próbáljuk osztani.
       `;
       resultDiv.appendChild(introStep);
-
-      // A prímtényezők keresése
       while (number > 1) {
         if (number % divisor === 0) {
           factors.push(divisor);
           const remaining = number / divisor;
-
           let factorizationString = factors.join(' &times; ');
-          if (remaining > 1) {
-            factorizationString += ' &times; ' + remaining;
-          }
-
+          if (remaining > 1) factorizationString += ' &times; ' + remaining;
           const iterationStep = document.createElement('div');
           iterationStep.className = 'step-box';
           iterationStep.innerHTML = `
@@ -262,19 +154,13 @@
             ${originalNumber} = ${factorizationString}
           `;
           resultDiv.appendChild(iterationStep);
-
           number = remaining;
           stepCounter++;
         } else {
-          if (divisor === 2) {
-            divisor++;
-          } else {
-            divisor += 2;
-          }
+          if (divisor === 2) divisor++;
+          else divisor += 2;
         }
       }
-
-      // Végleges eredmények megjelenítése
       if (factors.length === 1) {
         const primeMessageDiv = document.createElement('div');
         primeMessageDiv.className = 'result-box';
@@ -284,7 +170,6 @@
         `;
         resultDiv.appendChild(primeMessageDiv);
       } else {
-        // Hagyományos formátum
         const finalResultStep = document.createElement('div');
         finalResultStep.className = 'result-box';
         finalResultStep.innerHTML = `
@@ -293,66 +178,46 @@
           <span class="fs-4">${factors.join(' &times; ')}</span>
         `;
         resultDiv.appendChild(finalResultStep);
-
-        // Hatványozott formátum
         const finalResultExponentStep = document.createElement('div');
-        finalResultExponentStep.className = 'exponent-box';
-
+        finalResultExponentStep.className = 'result-box';
         const factorCounts = {};
         factors.forEach(factor => {
           factorCounts[factor] = (factorCounts[factor] || 0) + 1;
         });
-
         let exponentString = originalNumber + ' = ';
         let firstFactor = true;
         for (const factor in factorCounts) {
-          if (!firstFactor) {
-            exponentString += ' &times; ';
-          }
+          if (!firstFactor) exponentString += ' &times; ';
           exponentString += factor;
-          if (factorCounts[factor] > 1) {
-            exponentString += '<sup>' + factorCounts[factor] + '</sup>';
-          }
+          if (factorCounts[factor] > 1) exponentString += '<sup>' + factorCounts[factor] + '</sup>';
           firstFactor = false;
         }
-
         finalResultExponentStep.innerHTML = `
           <strong>Hatványozással felírva</strong><br>
-          <span class="fs-5">${exponentString}</span>
+          <span class="fs-4">${exponentString}</span>
         `;
         resultDiv.appendChild(finalResultExponentStep);
       }
-
-      // Osztók számítása és megjelenítése
       const divisors = [];
       for (let i = 1; i <= originalNumber; i++) {
-        if (originalNumber % i === 0) {
-          divisors.push(i);
-        }
+        if (originalNumber % i === 0) divisors.push(i);
       }
-
       const improperDivisors = [1, originalNumber];
       const properDivisors = divisors.filter(d => d !== 1 && d !== originalNumber);
-
-      // Valódi osztók megjelenítése
       const properDivisorsDiv = document.createElement('div');
-      properDivisorsDiv.className = 'divisors-box';
+      properDivisorsDiv.className = 'step-box';
       properDivisorsDiv.innerHTML = `
         <strong>Valódi osztók</strong><br>
         ${properDivisors.length > 0 ? properDivisors.join(', ') : 'Nincsenek'}
       `;
       resultDiv.appendChild(properDivisorsDiv);
-
-      // Nem valódi osztók megjelenítése
       const improperDivisorsDiv = document.createElement('div');
-      improperDivisorsDiv.className = 'divisors-box';
+      improperDivisorsDiv.className = 'step-box';
       improperDivisorsDiv.innerHTML = `
         <strong>Nem valódi osztók</strong><br>
         ${improperDivisors.join(', ')}
       `;
       resultDiv.appendChild(improperDivisorsDiv);
-
-      // Összes osztó számának megjelenítése
       const totalDivisorsDiv = document.createElement('div');
       totalDivisorsDiv.className = 'result-box';
       totalDivisorsDiv.innerHTML = `
@@ -361,6 +226,13 @@
       `;
       resultDiv.appendChild(totalDivisorsDiv);
     }
+    // Sötét/világos mód öröklés, ha index.html-ből jön
+    window.onload = function() {
+      if(window.parent && window.parent.document && window.parent.document.body.classList.contains('dark-mode')) {
+        document.body.classList.add('dark-mode');
+        document.documentElement.classList.add('dark-mode');
+      }
+    };
   </script>
 </body>
 </html>
