@@ -1,208 +1,366 @@
 <!DOCTYPE html>
-<html lang="hu" class="dark transition-colors duration-300">
+<html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prímtényezős Felbontás</title>
-    <!-- Tailwind CSS beállítása a modern és reszponzív kinézetért -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* A fő betűtípus beállítása */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Prímtényezős Felbontás</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      font-family: "Fira Sans", Arial, sans-serif;
+      background: #eaf6ff;
+      color: #1a284f;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background: #1a284f;
+      color: #eaf6ff;
+    }
+    .theme-switcher {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #1564b3;
+      float: right;
+      margin-top: 0.5em;
+      margin-left: 1em;
+      transition: color 0.3s;
+    }
+    .theme-switcher:active {
+      color: #f3cb23;
+    }
+    .dark-mode .theme-switcher {
+      color: #f3cb23;
+    }
+    .math-icon {
+      font-size: 2rem;
+      line-height: 1;
+      margin-right: 10px;
+      color: #ffd700;
+      vertical-align: middle;
+    }
+    .dark-mode .math-icon {
+      color: #f3cb23;
+    }
+    .card {
+      background: #d2e7fa;
+      border: none;
+      margin-top: 2em;
+    }
+    .dark-mode .card {
+      background: #263a5e;
+      color: #eaf6ff;
+    }
+    .input-number {
+      font-size: 1.15em;
+      background: #fff;
+      color: #1a284f;
+      border: 1.5px solid #b8d5f9;
+      border-radius: 8px;
+      padding: 0.5em 0.8em;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode .input-number {
+      background: #1a284f;
+      color: #eaf6ff;
+      border-color: #08509b;
+    }
+    .btn-math {
+      font-size: 1.15em;
+      background: #1564b3;
+      color: #fff;
+      border-radius: 8px;
+      border: none;
+      margin-top: 0.8em;
+      box-shadow: 0 2px 8px rgba(21,100,179,0.09);
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-math:hover, .btn-math:focus {
+      background: #08509b;
+      color: #f3cb23;
+    }
+    .dark-mode .btn-math {
+      background: #263a5e;
+      color: #f3cb23;
+    }
+    .dark-mode .btn-math:hover, .dark-mode .btn-math:focus {
+      background: #08509b;
+      color: #ffd700;
+    }
+    #result {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 2px solid #b8d5f9;
+    }
+    .dark-mode #result {
+      border-top: 2px solid #08509b;
+    }
+    .step-box {
+      padding: 1em;
+      background: #f7f8fa;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      color: #1a284f;
+      border-left: 4px solid #1564b3;
+    }
+    .dark-mode .step-box {
+      background: #263a5e;
+      color: #eaf6ff;
+      border-left: 4px solid #ffd700;
+    }
+    .result-box {
+      padding: 1em;
+      background: #1564b3;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 1em;
+    }
+    .dark-mode .result-box {
+      background: #ffd700;
+      color: #1a284f;
+    }
+    .exponent-box {
+      padding: 1em;
+      background: #f7f8fa;
+      border-radius: 8px;
+      color: #1564b3;
+      margin-bottom: 1em;
+    }
+    .dark-mode .exponent-box {
+      background: #263a5e;
+      color: #ffd700;
+    }
+    .divisors-box {
+      padding: 1em;
+      background: #eaf6ff;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      color: #1564b3;
+      border-left: 4px solid #1564b3;
+    }
+    .dark-mode .divisors-box {
+      background: #263a5e;
+      color: #ffd700;
+      border-left: 4px solid #ffd700;
+    }
+    .error-box {
+      color: #c2001a;
+      font-weight: bold;
+      padding: 1em;
+      background: #ffe3e3;
+      border-radius: 8px;
+      margin-bottom: 1em;
+    }
+    .dark-mode .error-box {
+      color: #ff6f61;
+      background: #2d1a2a;
+    }
+  </style>
 </head>
-<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen bg-gray-900 text-gray-100">
-
-    <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-lg transition-colors duration-300">
-        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-blue-400">
-            Prímtényezős felbontás
-        </h1>
-
-        <!-- A beviteli mező konténere -->
-        <div class="space-y-4 mb-6">
-            <div class="input-group">
-                <label for="number" class="block font-semibold mb-1 text-gray-300">
-                    Szám:
-                </label>
-                <input type="number" id="number" value="18" min="2" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
-            </div>
-        </div>
-        
-        <!-- A "Számolás" gomb -->
-        <button onclick="calculatePrimeFactors()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg">
-            Számolás
-        </button>
-        
-        <!-- Az eredmények megjelenítésének helye -->
-        <div id="result" class="mt-8 pt-6 border-t-2 border-gray-700">
-            <!-- Ide kerülnek a lépések -->
-        </div>
+<body>
+  <div class="container py-3">
+    <button class="theme-switcher" id="themeBtn" onclick="toggleTheme()" title="Sötét/Világos váltás">
+      <span id="icon-sun" style="display:inline;">
+        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/>
+          <g>
+            <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2"/>
+            <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+            <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="2"/>
+            <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+          </g>
+        </svg>
+      </span>
+      <span id="icon-moon" style="display:none;">
+        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 0111.21 3a1 1 0 00-1.12 1.24A7 7 0 0012 21a7 7 0 009.76-8.67 1 1 0 00-1.24-1.12z" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      </span>
+    </button>
+    <div class="d-flex align-items-center mb-3">
+      <span class="math-icon">𝑛</span>
+      <h1 class="math-title mb-0">Prímtényezős felbontás</h1>
+      <span class="math-icon">÷</span>
     </div>
-
-    <!-- Csongor felirat -->
-    <div class="mt-8 text-center">
-        <p class="mt-4 text-sm text-gray-400">Csongor</p>
+    <div class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+      <label for="number" class="form-label fw-bold mb-2">Szám:</label>
+      <input type="number" id="number" value="18" min="2" class="input-number w-100 mb-3">
+      <button onclick="calculatePrimeFactors()" type="button" class="btn btn-math w-100 mb-2">Számolás</button>
+      <div id="result"></div>
     </div>
+    <div class="mt-4 text-center">
+      <p class="mt-4 text-sm text-secondary">Csongor</p>
+    </div>
+  </div>
+  <script>
+    // Sötét/világos téma váltó
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      document.getElementById('icon-sun').style.display = isDark ? 'none' : 'inline';
+      document.getElementById('icon-moon').style.display = isDark ? 'inline' : 'none';
+    }
+    window.onload = function() {
+      if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('icon-sun').style.display = 'none';
+        document.getElementById('icon-moon').style.display = 'inline';
+      }
+    };
 
-    <script>
-        /**
-         * Kiszámítja és megjeleníti egy szám prímtényezős felbontását lépésenként.
-         */
-        function calculatePrimeFactors() {
-            // Beolvassa a felhasználó által megadott számot
-            let number = parseInt(document.getElementById('number').value);
-            const originalNumber = number;
-            const resultDiv = document.getElementById('result');
-            
-            // Törli az előző eredményeket
-            resultDiv.innerHTML = '';
+    function calculatePrimeFactors() {
+      let number = parseInt(document.getElementById('number').value);
+      const originalNumber = number;
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '';
 
-            // Kezeli az érvénytelen bemeneteket
-            if (isNaN(number) || number < 2) {
-                resultDiv.innerHTML = `<div class="p-4 bg-red-900 text-red-200 rounded-lg">Kérjük, adjon meg egy 2-nél nagyobb egész számot.</div>`;
-                return;
-            }
+      if (isNaN(number) || number < 2) {
+        resultDiv.innerHTML = `<div class="error-box">Kérjük, adjon meg egy 2-nél nagyobb egész számot.</div>`;
+        return;
+      }
 
-            const factors = [];
-            let divisor = 2;
-            let stepCounter = 1;
+      const factors = [];
+      let divisor = 2;
+      let stepCounter = 1;
 
-            // Első lépés: a folyamat elindítása
-            const introStep = document.createElement('div');
-            introStep.className = 'p-4 bg-blue-900 bg-opacity-30 rounded-lg border-l-4 border-blue-400 mb-4';
-            introStep.innerHTML = `
-                <strong class="text-blue-200">1. lépés: Induljunk!</strong><br>
-                A ${originalNumber} számot fogjuk prímtényezőkre bontani. Mindig a legkisebb prímszámmal próbáljuk osztani.
-            `;
-            resultDiv.appendChild(introStep);
-            
-            // A prímtényezők keresése
-            while (number > 1) {
-                // Ellenőrzi, hogy a szám osztható-e az aktuális osztóval
-                if (number % divisor === 0) {
-                    factors.push(divisor);
-                    const remaining = number / divisor;
-                    
-                    // Összeállítja a felbontás aktuális állását
-                    let factorizationString = factors.join(' &times; ');
-                    if (remaining > 1) {
-                        factorizationString += ' &times; ' + remaining;
-                    }
-                    
-                    const iterationStep = document.createElement('div');
-                    iterationStep.className = 'p-4 bg-gray-700 rounded-lg border-l-4 border-gray-600 mb-4';
-                    iterationStep.innerHTML = `
-                        <strong class="text-gray-200">${stepCounter + 1}. lépés: Osztás ${divisor}-val</strong><br>
-                        A(z) ${number} osztható ${divisor}-vel. <br>
-                        A felbontás jelenlegi állása: <br>
-                        ${originalNumber} = ${factorizationString}
-                    `;
-                    resultDiv.appendChild(iterationStep);
-                    
-                    number = remaining;
-                    stepCounter++;
-                } else {
-                    // Ha a szám nem osztható, megpróbálja a következő prímszámot
-                    if (divisor === 2) {
-                        divisor++; // 2 után a következő prímszám a 3
-                    } else {
-                        divisor += 2; // Innentől csak páratlan számokat kell vizsgálni
-                    }
-                }
-            }
-            
-            // Végleges eredmények megjelenítése
-            
-            // Ha a szám prímszám
-            if (factors.length === 1) {
-                const primeMessageDiv = document.createElement('div');
-                primeMessageDiv.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold';
-                primeMessageDiv.innerHTML = `
-                    <strong class="text-blue-200">Eredmény</strong><br>
-                    A(z) <span class="text-xl">${originalNumber}</span> egy **prímszám**, ezért nem bontható tovább.
-                `;
-                resultDiv.appendChild(primeMessageDiv);
-            } else {
-                // A hagyományos formátum
-                const finalResultStep = document.createElement('div');
-                finalResultStep.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold mb-4';
-                finalResultStep.innerHTML = `
-                    <strong class="text-blue-200">Végleges felbontás</strong><br>
-                    A ${originalNumber} prímtényezős felbontása: <br>
-                    <span class="text-xl">${factors.join(' &times; ')}</span>
-                `;
-                resultDiv.appendChild(finalResultStep);
+      // Első lépés: a folyamat elindítása
+      const introStep = document.createElement('div');
+      introStep.className = 'step-box';
+      introStep.innerHTML = `
+        <strong>1. lépés: Induljunk!</strong><br>
+        A ${originalNumber} számot fogjuk prímtényezőkre bontani. Mindig a legkisebb prímszámmal próbáljuk osztani.
+      `;
+      resultDiv.appendChild(introStep);
 
-                // A hatványozott formátum
-                const finalResultExponentStep = document.createElement('div');
-                finalResultExponentStep.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold';
-                
-                // Elkészíti a hatványozott formátumot
-                const factorCounts = {};
-                factors.forEach(factor => {
-                    factorCounts[factor] = (factorCounts[factor] || 0) + 1;
-                });
+      // A prímtényezők keresése
+      while (number > 1) {
+        if (number % divisor === 0) {
+          factors.push(divisor);
+          const remaining = number / divisor;
 
-                let exponentString = originalNumber + ' = ';
-                let firstFactor = true;
-                for (const factor in factorCounts) {
-                    if (!firstFactor) {
-                        exponentString += ' &times; ';
-                    }
-                    exponentString += factor;
-                    if (factorCounts[factor] > 1) {
-                        exponentString += '<sup>' + factorCounts[factor] + '</sup>';
-                    }
-                    firstFactor = false;
-                }
-                
-                finalResultExponentStep.innerHTML = `
-                    <strong class="text-blue-200">Hatványozással felírva</strong><br>
-                    <span class="text-xl">${exponentString}</span>
-                `;
-                resultDiv.appendChild(finalResultExponentStep);
-            }
+          let factorizationString = factors.join(' &times; ');
+          if (remaining > 1) {
+            factorizationString += ' &times; ' + remaining;
+          }
 
-            // Osztók számítása és megjelenítése
-            const divisors = [];
-            for (let i = 1; i <= originalNumber; i++) {
-                if (originalNumber % i === 0) {
-                    divisors.push(i);
-                }
-            }
+          const iterationStep = document.createElement('div');
+          iterationStep.className = 'step-box';
+          iterationStep.innerHTML = `
+            <strong>${stepCounter + 1}. lépés: Osztás ${divisor}-val</strong><br>
+            A(z) ${number} osztható ${divisor}-vel. <br>
+            A felbontás jelenlegi állása: <br>
+            ${originalNumber} = ${factorizationString}
+          `;
+          resultDiv.appendChild(iterationStep);
 
-            const improperDivisors = [1, originalNumber];
-            const properDivisors = divisors.filter(d => d !== 1 && d !== originalNumber);
-
-            // Valódi osztók megjelenítése
-            const properDivisorsDiv = document.createElement('div');
-            properDivisorsDiv.className = 'p-4 bg-gray-700 rounded-lg border-l-4 border-gray-600 mt-4';
-            properDivisorsDiv.innerHTML = `
-                <strong class="text-gray-200">Valódi osztók</strong><br>
-                ${properDivisors.length > 0 ? properDivisors.join(', ') : 'Nincsenek'}
-            `;
-            resultDiv.appendChild(properDivisorsDiv);
-
-            // Nem valódi osztók megjelenítése
-            const improperDivisorsDiv = document.createElement('div');
-            improperDivisorsDiv.className = 'p-4 bg-gray-700 rounded-lg border-l-4 border-gray-600 mt-4';
-            improperDivisorsDiv.innerHTML = `
-                <strong class="text-gray-200">Nem valódi osztók</strong><br>
-                ${improperDivisors.join(', ')}
-            `;
-            resultDiv.appendChild(improperDivisorsDiv);
-
-            // Összes osztó számának megjelenítése
-            const totalDivisorsDiv = document.createElement('div');
-            totalDivisorsDiv.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold mt-4';
-            totalDivisorsDiv.innerHTML = `
-                <strong class="text-blue-200">Összes osztó száma</strong><br>
-                A(z) ${originalNumber} számnak összesen <span class="text-xl">${divisors.length}</span> osztója van.
-            `;
-            resultDiv.appendChild(totalDivisorsDiv);
+          number = remaining;
+          stepCounter++;
+        } else {
+          if (divisor === 2) {
+            divisor++;
+          } else {
+            divisor += 2;
+          }
         }
-    </script>
+      }
+
+      // Végleges eredmények megjelenítése
+      if (factors.length === 1) {
+        const primeMessageDiv = document.createElement('div');
+        primeMessageDiv.className = 'result-box';
+        primeMessageDiv.innerHTML = `
+          <strong>Eredmény</strong><br>
+          A(z) <span class="fs-4">${originalNumber}</span> egy <b>prímszám</b>, ezért nem bontható tovább.
+        `;
+        resultDiv.appendChild(primeMessageDiv);
+      } else {
+        // Hagyományos formátum
+        const finalResultStep = document.createElement('div');
+        finalResultStep.className = 'result-box';
+        finalResultStep.innerHTML = `
+          <strong>Végleges felbontás</strong><br>
+          A ${originalNumber} prímtényezős felbontása: <br>
+          <span class="fs-4">${factors.join(' &times; ')}</span>
+        `;
+        resultDiv.appendChild(finalResultStep);
+
+        // Hatványozott formátum
+        const finalResultExponentStep = document.createElement('div');
+        finalResultExponentStep.className = 'exponent-box';
+
+        const factorCounts = {};
+        factors.forEach(factor => {
+          factorCounts[factor] = (factorCounts[factor] || 0) + 1;
+        });
+
+        let exponentString = originalNumber + ' = ';
+        let firstFactor = true;
+        for (const factor in factorCounts) {
+          if (!firstFactor) {
+            exponentString += ' &times; ';
+          }
+          exponentString += factor;
+          if (factorCounts[factor] > 1) {
+            exponentString += '<sup>' + factorCounts[factor] + '</sup>';
+          }
+          firstFactor = false;
+        }
+
+        finalResultExponentStep.innerHTML = `
+          <strong>Hatványozással felírva</strong><br>
+          <span class="fs-5">${exponentString}</span>
+        `;
+        resultDiv.appendChild(finalResultExponentStep);
+      }
+
+      // Osztók számítása és megjelenítése
+      const divisors = [];
+      for (let i = 1; i <= originalNumber; i++) {
+        if (originalNumber % i === 0) {
+          divisors.push(i);
+        }
+      }
+
+      const improperDivisors = [1, originalNumber];
+      const properDivisors = divisors.filter(d => d !== 1 && d !== originalNumber);
+
+      // Valódi osztók megjelenítése
+      const properDivisorsDiv = document.createElement('div');
+      properDivisorsDiv.className = 'divisors-box';
+      properDivisorsDiv.innerHTML = `
+        <strong>Valódi osztók</strong><br>
+        ${properDivisors.length > 0 ? properDivisors.join(', ') : 'Nincsenek'}
+      `;
+      resultDiv.appendChild(properDivisorsDiv);
+
+      // Nem valódi osztók megjelenítése
+      const improperDivisorsDiv = document.createElement('div');
+      improperDivisorsDiv.className = 'divisors-box';
+      improperDivisorsDiv.innerHTML = `
+        <strong>Nem valódi osztók</strong><br>
+        ${improperDivisors.join(', ')}
+      `;
+      resultDiv.appendChild(improperDivisorsDiv);
+
+      // Összes osztó számának megjelenítése
+      const totalDivisorsDiv = document.createElement('div');
+      totalDivisorsDiv.className = 'result-box';
+      totalDivisorsDiv.innerHTML = `
+        <strong>Összes osztó száma</strong><br>
+        A(z) ${originalNumber} számnak összesen <span class="fs-4">${divisors.length}</span> osztója van.
+      `;
+      resultDiv.appendChild(totalDivisorsDiv);
+    }
+  </script>
 </body>
 </html>
