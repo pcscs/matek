@@ -1,427 +1,525 @@
 <!DOCTYPE html>
-<html lang="hu" class="dark transition-colors duration-300">
+<html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Egyenletek</title>
-    <!-- Tailwind CSS a modern és reszponzív kinézetért -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* A fő betűtípus beállítása */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Rejtett kapcsoló bemeneti elem */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Egyenletek</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      font-family: "Fira Sans", Arial, sans-serif;
+      background: #eaf6ff;
+      color: #1a284f;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background: #1a284f;
+      color: #eaf6ff;
+    }
+    .theme-switcher {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #1564b3;
+      float: right;
+      margin-top: 0.5em;
+      margin-left: 1em;
+      transition: color 0.3s;
+    }
+    .theme-switcher:active {
+      color: #f3cb23;
+    }
+    .dark-mode .theme-switcher {
+      color: #f3cb23;
+    }
+    .math-icon {
+      font-size: 2rem;
+      line-height: 1;
+      margin-right: 10px;
+      color: #ffd700;
+      vertical-align: middle;
+    }
+    .dark-mode .math-icon {
+      color: #f3cb23;
+    }
+    .card {
+      background: #d2e7fa;
+      border: none;
+      margin-top: 2em;
+    }
+    .dark-mode .card {
+      background: #263a5e;
+      color: #eaf6ff;
+    }
+    .input-equation {
+      font-size: 1.15em;
+      background: #fff;
+      color: #1a284f;
+      border: 1.5px solid #b8d5f9;
+      border-radius: 8px;
+      padding: 0.5em 0.8em;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode .input-equation {
+      background: #1a284f;
+      color: #eaf6ff;
+      border-color: #08509b;
+    }
+    .btn-math {
+      font-size: 1.15em;
+      background: #1564b3;
+      color: #fff;
+      border-radius: 8px;
+      border: none;
+      margin-top: 0.8em;
+      box-shadow: 0 2px 8px rgba(21,100,179,0.09);
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-math:hover, .btn-math:focus {
+      background: #08509b;
+      color: #f3cb23;
+    }
+    .dark-mode .btn-math {
+      background: #263a5e;
+      color: #f3cb23;
+    }
+    .dark-mode .btn-math:hover, .dark-mode .btn-math:focus {
+      background: #08509b;
+      color: #ffd700;
+    }
+    .switch-label {
+      font-size: 1em;
+      color: #1564b3;
+      font-weight: 500;
+      margin-bottom: 0.2em;
+    }
+    .dark-mode .switch-label {
+      color: #ffd700;
+    }
+    .switch-toggle {
+      width: 46px;
+      height: 26px;
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 10px;
+    }
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #b8d5f9;
+      transition: .4s;
+      border-radius: 26px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: #fff;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background: #08509b;
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    .dark-mode .slider {
+      background: #08509b;
+    }
+    .dark-mode .slider:before {
+      background: #ffd700;
+    }
+    #solution-container {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 2px solid #b8d5f9;
+    }
+    .dark-mode #solution-container {
+      border-top: 2px solid #08509b;
+    }
+    .step-box {
+      padding: 1em;
+      background: #f7f8fa;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      color: #1a284f;
+    }
+    .dark-mode .step-box {
+      background: #263a5e;
+      color: #eaf6ff;
+    }
+    .result-box {
+      padding: 1em;
+      background: #1564b3;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 1em;
+    }
+    .dark-mode .result-box {
+      background: #ffd700;
+      color: #1a284f;
+    }
+    .error-box {
+      color: #c2001a;
+      font-weight: bold;
+      padding: 1em;
+      background: #ffe3e3;
+      border-radius: 8px;
+      margin-bottom: 1em;
+    }
+    .dark-mode .error-box {
+      color: #ff6f61;
+      background: #2d1a2a;
+    }
+    .verification-box {
+      padding: 1em;
+      background: #eaf6ff;
+      border-radius: 8px;
+      color: #1564b3;
+      margin-bottom: 1em;
+      border-left: 4px solid #1564b3;
+    }
+    .dark-mode .verification-box {
+      background: #263a5e;
+      color: #ffd700;
+      border-left: 4px solid #ffd700;
+    }
+  </style>
 </head>
-<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen bg-gray-900 text-gray-100">
-
-    <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-lg transition-colors duration-300">
-        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-blue-400">
-            Egyenletek
-        </h1>
-
-        <div class="mb-4">
-            <input id="equation-input" type="text" placeholder="pl.: 2(3x - 1) = 3x + 1" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100">
-        </div>
-
-        <div class="flex items-center justify-between mb-6">
-            <span class="text-sm font-medium text-gray-400 select-none">Részletes megoldás</span>
-            <label for="toggle-switch" class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="toggle-switch" class="sr-only peer" onchange="toggleMode()">
-                <!-- A kapcsoló háttere -->
-                <div class="w-14 h-8 bg-gray-600 rounded-full shadow-inner transition-colors duration-300 peer-checked:bg-blue-500"></div>
-                <!-- A kapcsoló gombja -->
-                <div class="absolute left-1 top-1 bg-gray-200 w-6 h-6 rounded-full shadow transition-transform duration-300 peer-checked:translate-x-full"></div>
-            </label>
-            <span class="text-sm font-medium text-gray-400 select-none">Végeredmény</span>
-        </div>
-        
-        <button onclick="solveEquation()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg mb-6">
-            Megoldás
-        </button>
-        
-        <div id="solution-container" class="mt-8 pt-6 border-t-2 border-gray-700">
-            <!-- Ide kerül a lépésenkénti megoldás -->
-        </div>
+<body>
+  <div class="container py-3">
+    <button class="theme-switcher" id="themeBtn" onclick="toggleTheme()" title="Sötét/Világos váltás">
+      <span id="icon-sun" style="display:inline;">
+        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/>
+          <g>
+            <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2"/>
+            <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+            <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="2"/>
+            <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+          </g>
+        </svg>
+      </span>
+      <span id="icon-moon" style="display:none;">
+        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 0111.21 3a1 1 0 00-1.12 1.24A7 7 0 0012 21a7 7 0 009.76-8.67 1 1 0 00-1.24-1.12z" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      </span>
+    </button>
+    <div class="d-flex align-items-center mb-3">
+      <span class="math-icon">𝑥</span>
+      <h1 class="math-title mb-0">Egyenletek</h1>
+      <span class="math-icon">=</span>
+      <span class="math-icon">?</span>
     </div>
-
-    <!-- Csongor felirat -->
-    <div class="mt-8 text-center">
-        <p class="mt-4 text-sm text-gray-400">Csongor</p>
+    <div class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+      <label for="equation-input" class="form-label switch-label">Írd be az egyenletet (pl.: 2(3x - 1) = 3x + 1)</label>
+      <input id="equation-input" type="text" class="input-equation w-100 mb-3" placeholder="pl.: 2(3x - 1) = 3x + 1">
+      <div class="d-flex align-items-center mb-3">
+        <span class="switch-label me-2">Részletes megoldás</span>
+        <label class="switch-toggle">
+          <input type="checkbox" id="toggle-switch" onchange="toggleMode()">
+          <span class="slider"></span>
+        </label>
+        <span class="switch-label ms-2">Csak végeredmény</span>
+      </div>
+      <button onclick="solveEquation()" type="button" class="btn btn-math w-100 mb-4">Megoldás</button>
+      <div id="solution-container"></div>
     </div>
+    <div class="mt-4 text-center">
+      <p class="mt-4 text-sm text-secondary">Csongor</p>
+    </div>
+  </div>
+  <script>
+    // Sötét/világos téma váltó
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      document.getElementById('icon-sun').style.display = isDark ? 'none' : 'inline';
+      document.getElementById('icon-moon').style.display = isDark ? 'inline' : 'none';
+    }
+    window.onload = function() {
+      if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('icon-sun').style.display = 'none';
+        document.getElementById('icon-moon').style.display = 'inline';
+      }
+      document.getElementById('toggle-switch').checked = false; // Részletes nézet alapból
+      isDetailedMode = true;
+    };
 
-    <script>
-        // Kezdeti állapot: részletes nézet
-        let isDetailedMode = true;
+    let isDetailedMode = true;
 
-        /**
-         * Vált a részletes és az összefoglaló nézet között.
-         */
-        function toggleMode() {
-            const toggleSwitch = document.getElementById('toggle-switch');
-            isDetailedMode = !toggleSwitch.checked;
-            const solutionContainer = document.getElementById('solution-container');
+    function toggleMode() {
+      const toggleSwitch = document.getElementById('toggle-switch');
+      isDetailedMode = !toggleSwitch.checked;
+      const solutionContainer = document.getElementById('solution-container');
+      // Frissítsen, ha már van eredmény
+      if (solutionContainer.children.length > 0) {
+        solveEquation();
+      }
+    }
 
-            // Ha van már megoldás a kijelzőn, frissítjük a nézetet
-            if (solutionContainer.children.length > 0) {
-                solveEquation();
-            }
+    function expandEquation(equation) {
+      const regex = /([+-]?\d*)\((.*?)\)/g;
+      let expandedEquation = equation;
+      let match;
+      while ((match = regex.exec(equation)) !== null) {
+        const fullTerm = match[0];
+        const multiplierStr = match[1] || '1';
+        const innerExpression = match[2];
+        const multiplier = parseFloat(multiplierStr.replace('+', '').replace('-', '')) * (multiplierStr.startsWith('-') ? -1 : 1);
+        const innerTerms = parseSide(innerExpression);
+        let newXCoeff = innerTerms.xCoeff * multiplier;
+        let newConstant = innerTerms.constant * multiplier;
+        let newTerm = '';
+        if (newXCoeff !== 0) {
+          if (newXCoeff === 1) newTerm += 'x';
+          else if (newXCoeff === -1) newTerm += '-x';
+          else newTerm += `${newXCoeff}x`;
         }
-        
-        // A kezdeti állapot beállítása a kapcsoló szerint (alapértelmezésben be van jelölve a részletes nézet)
-        window.onload = function() {
-             const toggleSwitch = document.getElementById('toggle-switch');
-             toggleSwitch.checked = false; // Részletes nézet az alapértelmezett
-             isDetailedMode = true;
-        };
-
-        /**
-         * Kifejti a zárójeles kifejezéseket az egyenletben, pl. "2(3x-1)" -> "6x-2".
-         * @param {string} equation - Az eredeti egyenlet.
-         * @returns {string} A zárójelek nélküli egyenlet.
-         */
-        function expandEquation(equation) {
-            const regex = /([+-]?\d*)\((.*?)\)/g;
-            let expandedEquation = equation;
-            let match;
-
-            while ((match = regex.exec(equation)) !== null) {
-                const fullTerm = match[0];
-                const multiplierStr = match[1] || '1';
-                const innerExpression = match[2];
-                
-                const multiplier = parseFloat(multiplierStr.replace('+', '').replace('-', '')) * (multiplierStr.startsWith('-') ? -1 : 1);
-                
-                const innerTerms = parseSide(innerExpression);
-                
-                let newXCoeff = innerTerms.xCoeff * multiplier;
-                let newConstant = innerTerms.constant * multiplier;
-
-                let newTerm = '';
-                if (newXCoeff !== 0) {
-                    if (newXCoeff === 1) {
-                        newTerm += 'x';
-                    } else if (newXCoeff === -1) {
-                        newTerm += '-x';
-                    } else {
-                        newTerm += `${newXCoeff}x`;
-                    }
-                }
-                
-                if (newConstant !== 0) {
-                    if (newConstant > 0 && newXCoeff !== 0) {
-                        newTerm += ` + ${newConstant}`;
-                    } else if (newConstant < 0 && newXCoeff !== 0) {
-                        newTerm += ` - ${Math.abs(newConstant)}`;
-                    } else {
-                        newTerm += `${newConstant}`;
-                    }
-                }
-
-                expandedEquation = expandedEquation.replace(fullTerm, newTerm);
-            }
-            return expandedEquation;
+        if (newConstant !== 0) {
+          if (newConstant > 0 && newXCoeff !== 0) newTerm += ` + ${newConstant}`;
+          else if (newConstant < 0 && newXCoeff !== 0) newTerm += ` - ${Math.abs(newConstant)}`;
+          else newTerm += `${newConstant}`;
         }
+        expandedEquation = expandedEquation.replace(fullTerm, newTerm);
+      }
+      return expandedEquation;
+    }
 
-        /**
-         * Hozzáadja a zárójel felbontás lépéseit a kijelzőhöz, csak részletes módban.
-         * @param {string} originalEquation - Az eredeti egyenlet.
-         * @returns {string} A teljesen kifejtett egyenlet.
-         */
-        function addExpansionSteps(originalEquation) {
-            const regex = /([+-]?\d*)\((.*?)\)/g;
-            let expandedEquation = originalEquation;
-            let match;
-
-            while ((match = regex.exec(expandedEquation)) !== null) {
-                const fullTerm = match[0];
-                const multiplierStr = match[1] || '1';
-                const innerExpression = match[2];
-                const multiplier = parseFloat(multiplierStr.replace('+', '').replace('-', '')) * (multiplierStr.startsWith('-') ? -1 : 1);
-                const innerTerms = parseSide(innerExpression);
-                
-                if (isDetailedMode) {
-                    // --- 1. Lépés: A szorzás bemutatása ponttal ---
-                    let detailedExpansion = '';
-                    if (innerTerms.xCoeff !== 0) {
-                        const xCoeff = innerTerms.xCoeff;
-                        const xTerm = (xCoeff === 1) ? 'x' : `${xCoeff}x`;
-                        detailedExpansion += `${multiplier} · ${xTerm}`;
-                    }
-                    if (innerTerms.constant !== 0) {
-                        const constant = innerTerms.constant;
-                        const absConstant = Math.abs(constant);
-                        let termSign = '';
-                        
-                        if (detailedExpansion !== '') {
-                            if ((multiplier * constant) > 0) { termSign = ' + '; } else { termSign = ' - '; }
-                        } else {
-                            if ((multiplier * constant) < 0) { termSign = '-'; }
-                        }
-                        detailedExpansion += `${termSign}${Math.abs(multiplier)} · ${absConstant}`;
-                    }
-                    
-                    const detailedStepEquation = expandedEquation.replace(fullTerm, detailedExpansion);
-                    addStep(detailedStepEquation, "A zárójeles kifejezés felbontásának bemutatása.");
-                }
-
-                // --- 2. Lépés: Az összevont tagok kiírása ---
-                let newTerm = '';
-                const newXCoeff = innerTerms.xCoeff * multiplier;
-                const newConstant = innerTerms.constant * multiplier;
-
-                if (newXCoeff !== 0) {
-                    if (newXCoeff === 1) { newTerm += 'x'; } 
-                    else if (newXCoeff === -1) { newTerm += '-x'; } 
-                    else { newTerm += `${newXCoeff}x`; }
-                }
-                
-                if (newConstant !== 0) {
-                    if (newConstant > 0 && newXCoeff !== 0) { newTerm += ` + ${newConstant}`; } 
-                    else if (newConstant < 0 && newXCoeff !== 0) { newTerm += ` - ${Math.abs(newConstant)}`; } 
-                    else { newTerm += `${newConstant}`; }
-                }
-                
-                expandedEquation = expandedEquation.replace(fullTerm, newTerm);
-                if (isDetailedMode) {
-                    addStep(expandedEquation, "Az összevont tagok.");
-                }
-                
-                regex.lastIndex = 0;
-            }
-            return expandedEquation;
-        }
-
-        /**
-         * Parsolja az egyenlet egyik oldalát, hogy kinyerje az x együtthatóját és a számot.
-         * @param {string} side - Az egyenlet egyik oldalát reprezentáló string.
-         * @returns {object} Egy objektum `xCoeff` és `constant` értékekkel.
-         */
-        function parseSide(side) {
-            let xCoeff = 0;
-            let constant = 0;
-
-            side = side.replace(/\s+/g, '');
-            const terms = side.match(/([+-]?\d*x)|([+-]?\d+)/g) || [];
-
-            terms.forEach(term => {
-                if (term.includes('x')) {
-                    const coeffStr = term.replace('x', '');
-                    if (coeffStr === '' || coeffStr === '+') {
-                        xCoeff += 1;
-                    } else if (coeffStr === '-') {
-                        xCoeff -= 1;
-                    } else {
-                        xCoeff += parseFloat(coeffStr);
-                    }
-                } else {
-                    constant += parseFloat(term);
-                }
-            });
-
-            return { xCoeff, constant };
-        }
-
-        /**
-         * Formázza az egyenlet stringet az együtthatók és számok alapján.
-         * @param {number} xCoeff - Az x együtthatója.
-         * @param {number} constant - A szám.
-         * @returns {string} A formázott egyenlet string.
-         */
-        function formatEquation(xCoeff, constant) {
-            let equation = '';
-            if (xCoeff !== 0) {
-                if (xCoeff === 1) { equation += 'x'; } 
-                else if (xCoeff === -1) { equation += '-x'; } 
-                else { equation += `${xCoeff}x`; }
-            }
-            if (constant !== 0) {
-                if (constant > 0 && xCoeff !== 0) { equation += ` + ${constant}`; } 
-                else if (constant < 0 && xCoeff !== 0) { equation += ` - ${Math.abs(constant)}`; } 
-                else { equation += `${constant}`; }
-            }
-            if (xCoeff === 0 && constant === 0) {
-                return '0';
-            }
-            return equation.replace(/\s+/g, ' ').trim();
-        }
-
-        /**
-         * Hozzáad egy lépést a megoldás kijelzőhöz.
-         * @param {string} equation - Az egyenlet aktuális állapota.
-         * @param {string} explanation - A lépés magyarázata.
-         */
-        function addStep(equation, explanation) {
-            if (!isDetailedMode) return;
-            const container = document.getElementById('solution-container');
-            const stepDiv = document.createElement('div');
-            stepDiv.className = 'p-4 bg-gray-700 rounded-lg mb-4';
-            stepDiv.innerHTML = `
-                <p class="font-bold text-blue-300">Egyenlet:</p>
-                <p class="text-xl font-mono mb-2">${equation}</p>
-                <p class="text-sm text-gray-300">${explanation}</p>
-            `;
-            container.appendChild(stepDiv);
-        }
-        
-        /**
-         * Hozzáadja a végső eredményt a megoldás kijelzőhöz.
-         * @param {number} solution - A kiszámított x megoldás.
-         */
-        function addFinalResult(solution) {
-            const container = document.getElementById('solution-container');
-            const resultDiv = document.createElement('div');
-            resultDiv.className = 'p-4 bg-gray-700 rounded-lg mb-4';
-            resultDiv.innerHTML = `
-                <p class="font-bold text-blue-300">Végeredmény:</p>
-                <p class="text-xl font-mono mb-2">x = ${solution}</p>
-            `;
-            container.appendChild(resultDiv);
-        }
-
-        /**
-         * Hozzáadja az ellenőrzés lépését a megoldás kijelzőhöz.
-         * @param {string} originalEquation - Az eredeti egyenlet string.
-         * @param {number} solution - A kiszámított x megoldás.
-         */
-        function addVerification(originalEquation, solution) {
-            const container = document.getElementById('solution-container');
-            const parts = originalEquation.split(' = ');
-            const leftSideStr = parts[0];
-            const rightSideStr = parts[1];
-            
-            const leftSide = parseSide(expandEquation(leftSideStr));
-            const rightSide = parseSide(expandEquation(rightSideStr));
-
-            const leftValue = leftSide.xCoeff * solution + leftSide.constant;
-            const rightValue = rightSide.xCoeff * solution + rightSide.constant;
-
-            const verificationDiv = document.createElement('div');
-            verificationDiv.className = 'p-4 bg-blue-900 bg-opacity-50 text-blue-200 rounded-lg border-l-4 border-blue-400 font-bold';
-            
-            verificationDiv.innerHTML = `
-                <h2 class="text-xl sm:text-2xl font-semibold mb-2 text-blue-300">Ellenőrzés</h2>
-                <p class="mb-2">Helyettesítsük be a kapott értéket az eredeti egyenletbe:</p>
-                <p class="text-lg font-mono mb-2">${leftSideStr.replace(/x/g, `(${solution})`)} = ${rightSideStr.replace(/x/g, `(${solution})`)}</p>
-                <p class="text-lg font-mono">${leftValue.toFixed(2)} = ${rightValue.toFixed(2)}</p>
-                <p class="mt-2 text-sm text-gray-300">Mivel a két oldal megegyezik, a megoldás helyes.</p>
-            `;
-
-            container.appendChild(verificationDiv);
-        }
-
-        /**
-         * A fő funkció az egyenlet megoldásához.
-         */
-        function solveEquation() {
-            const input = document.getElementById('equation-input').value;
-            const container = document.getElementById('solution-container');
-            container.innerHTML = '';
-
-            const formattedInput = input.replace(/\s*=\s*/g, ' = ').replace(/([+\-])/g, ' $1 ').replace(/\s+/g, ' ').trim();
-            const originalEquation = formattedInput;
-            
-            const toggleSwitch = document.getElementById('toggle-switch');
-            isDetailedMode = !toggleSwitch.checked;
-            
-            if (isDetailedMode) {
-                addStep(originalEquation, "Az eredeti egyenlet.");
-            }
-
-            const expandedEquation = addExpansionSteps(originalEquation);
-            const parts = expandedEquation.split(' = ');
-            
-            if (parts.length !== 2) {
-                container.innerHTML = `<div class="p-4 bg-red-900 text-red-200 rounded-lg">Hibás formátum. Kérjük, adjon meg egy érvényes egyenletet.</div>`;
-                return;
-            }
-            
-            let leftSide = parseSide(parts[0]);
-            let rightSide = parseSide(parts[1]);
-
-            if (rightSide.xCoeff !== 0) {
-                const termToMove = -rightSide.xCoeff;
-                const operationText = `Az x-es tagokat az egyenlet bal oldalára mozgatjuk.`;
-                if (isDetailedMode) {
-                    addStep(
-                        `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}  /  ${termToMove > 0 ? '+' : ''}${termToMove}x`,
-                        operationText
-                    );
-                }
-                leftSide.xCoeff += termToMove;
-                rightSide.xCoeff += termToMove;
-
-                if (isDetailedMode) {
-                    addStep(
-                        `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}`,
-                        `Az egynemű tagok összevonása után.`
-                    );
-                }
-            }
-
-            if (leftSide.constant !== 0) {
-                const termToMove = -leftSide.constant;
-                const operationText = `A számokat az egyenlet jobb oldalára mozgatjuk.`;
-                if (isDetailedMode) {
-                    addStep(
-                        `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}  /  ${termToMove > 0 ? '+' : ''}${termToMove}`,
-                        operationText
-                    );
-                }
-                rightSide.constant += termToMove;
-                leftSide.constant += termToMove;
-
-                if (isDetailedMode) {
-                    addStep(
-                        `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}`,
-                        `Az egynemű tagok összevonása után.`
-                    );
-                }
-            }
-
-            if (leftSide.xCoeff === 0) {
-                if (rightSide.constant === 0) {
-                    const explanationText = `Az egyenlet mindkét oldala megegyezik. Ez azt jelenti, hogy az egyenletnek végtelen sok megoldása van.`;
-                    isDetailedMode ? addStep(`0 = 0`, explanationText) : addFinalResult("Végtelen sok megoldás");
-                } else {
-                    const explanationText = `Az egyenlet érvénytelen, mivel 0 nem egyenlő ${rightSide.constant}-nal. Nincs megoldás.`;
-                    isDetailedMode ? addStep(`0 = ${rightSide.constant}`, explanationText) : addFinalResult("Nincs megoldás");
-                }
-                return;
-            }
-
-            const solution = rightSide.constant / leftSide.xCoeff;
-            const explanationText = `Elosztjuk mindkét oldalt az x együtthatójával (${leftSide.xCoeff}), hogy megkapjuk az x értékét.`;
-
-            if (isDetailedMode) {
-                addStep(
-                    `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}  /  ${leftSide.xCoeff}`,
-                    explanationText
-                );
-                addStep(
-                    `x = ${solution}`,
-                    "Az egyenlet megoldása."
-                );
+    function addExpansionSteps(originalEquation) {
+      const regex = /([+-]?\d*)\((.*?)\)/g;
+      let expandedEquation = originalEquation;
+      let match;
+      while ((match = regex.exec(expandedEquation)) !== null) {
+        const fullTerm = match[0];
+        const multiplierStr = match[1] || '1';
+        const innerExpression = match[2];
+        const multiplier = parseFloat(multiplierStr.replace('+', '').replace('-', '')) * (multiplierStr.startsWith('-') ? -1 : 1);
+        const innerTerms = parseSide(innerExpression);
+        if (isDetailedMode) {
+          // 1. Lépés: szorzás bemutatása
+          let detailedExpansion = '';
+          if (innerTerms.xCoeff !== 0) {
+            const xCoeff = innerTerms.xCoeff;
+            const xTerm = (xCoeff === 1) ? 'x' : `${xCoeff}x`;
+            detailedExpansion += `${multiplier} · ${xTerm}`;
+          }
+          if (innerTerms.constant !== 0) {
+            const constant = innerTerms.constant;
+            const absConstant = Math.abs(constant);
+            let termSign = '';
+            if (detailedExpansion !== '') {
+              termSign = ((multiplier * constant) > 0) ? ' + ' : ' - ';
             } else {
-                 addFinalResult(solution);
+              if ((multiplier * constant) < 0) termSign = '-';
             }
-
-            addVerification(originalEquation, solution);
+            detailedExpansion += `${termSign}${Math.abs(multiplier)} · ${absConstant}`;
+          }
+          const detailedStepEquation = expandedEquation.replace(fullTerm, detailedExpansion);
+          addStep(detailedStepEquation, "A zárójeles kifejezés felbontásának bemutatása.");
         }
-    </script>
+        // 2. Lépés: összevonás
+        let newTerm = '';
+        const newXCoeff = innerTerms.xCoeff * multiplier;
+        const newConstant = innerTerms.constant * multiplier;
+        if (newXCoeff !== 0) {
+          if (newXCoeff === 1) newTerm += 'x';
+          else if (newXCoeff === -1) newTerm += '-x';
+          else newTerm += `${newXCoeff}x`;
+        }
+        if (newConstant !== 0) {
+          if (newConstant > 0 && newXCoeff !== 0) newTerm += ` + ${newConstant}`;
+          else if (newConstant < 0 && newXCoeff !== 0) newTerm += ` - ${Math.abs(newConstant)}`;
+          else newTerm += `${newConstant}`;
+        }
+        expandedEquation = expandedEquation.replace(fullTerm, newTerm);
+        if (isDetailedMode) {
+          addStep(expandedEquation, "Az összevont tagok.");
+        }
+        regex.lastIndex = 0;
+      }
+      return expandedEquation;
+    }
+
+    function parseSide(side) {
+      let xCoeff = 0;
+      let constant = 0;
+      side = side.replace(/\s+/g, '');
+      const terms = side.match(/([+-]?\d*x)|([+-]?\d+)/g) || [];
+      terms.forEach(term => {
+        if (term.includes('x')) {
+          const coeffStr = term.replace('x', '');
+          if (coeffStr === '' || coeffStr === '+') xCoeff += 1;
+          else if (coeffStr === '-') xCoeff -= 1;
+          else xCoeff += parseFloat(coeffStr);
+        } else {
+          constant += parseFloat(term);
+        }
+      });
+      return { xCoeff, constant };
+    }
+
+    function formatEquation(xCoeff, constant) {
+      let equation = '';
+      if (xCoeff !== 0) {
+        if (xCoeff === 1) equation += 'x';
+        else if (xCoeff === -1) equation += '-x';
+        else equation += `${xCoeff}x`;
+      }
+      if (constant !== 0) {
+        if (constant > 0 && xCoeff !== 0) equation += ` + ${constant}`;
+        else if (constant < 0 && xCoeff !== 0) equation += ` - ${Math.abs(constant)}`;
+        else equation += `${constant}`;
+      }
+      if (xCoeff === 0 && constant === 0) return '0';
+      return equation.replace(/\s+/g, ' ').trim();
+    }
+
+    function addStep(equation, explanation) {
+      if (!isDetailedMode) return;
+      const container = document.getElementById('solution-container');
+      const stepDiv = document.createElement('div');
+      stepDiv.className = 'step-box';
+      stepDiv.innerHTML = `
+        <p class="fw-bold math-title mb-1">Egyenlet:</p>
+        <p class="fs-5 font-monospace mb-2">${equation}</p>
+        <p class="text-secondary">${explanation}</p>
+      `;
+      container.appendChild(stepDiv);
+    }
+
+    function addFinalResult(solution) {
+      const container = document.getElementById('solution-container');
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'result-box';
+      resultDiv.innerHTML = `
+        <p class="fw-bold mb-1">Végeredmény:</p>
+        <p class="fs-4 font-monospace mb-2">x = ${solution}</p>
+      `;
+      container.appendChild(resultDiv);
+    }
+
+    function addVerification(originalEquation, solution) {
+      const container = document.getElementById('solution-container');
+      const parts = originalEquation.split(' = ');
+      const leftSideStr = parts[0];
+      const rightSideStr = parts[1];
+      const leftSide = parseSide(expandEquation(leftSideStr));
+      const rightSide = parseSide(expandEquation(rightSideStr));
+      const leftValue = leftSide.xCoeff * solution + leftSide.constant;
+      const rightValue = rightSide.xCoeff * solution + rightSide.constant;
+      const verificationDiv = document.createElement('div');
+      verificationDiv.className = 'verification-box';
+      verificationDiv.innerHTML = `
+        <h2 class="fs-5 math-title mb-2">Ellenőrzés</h2>
+        <p class="mb-2">Helyettesítsük be a kapott értéket az eredeti egyenletbe:</p>
+        <p class="fs-6 font-monospace mb-2">${leftSideStr.replace(/x/g, `(${solution})`)} = ${rightSideStr.replace(/x/g, `(${solution})`)}</p>
+        <p class="fs-6 font-monospace">${leftValue.toFixed(2)} = ${rightValue.toFixed(2)}</p>
+        <p class="mt-2 text-secondary">Mivel a két oldal megegyezik, a megoldás helyes.</p>
+      `;
+      container.appendChild(verificationDiv);
+    }
+
+    function solveEquation() {
+      const input = document.getElementById('equation-input').value;
+      const container = document.getElementById('solution-container');
+      container.innerHTML = '';
+      const formattedInput = input.replace(/\s*=\s*/g, ' = ').replace(/([+\-])/g, ' $1 ').replace(/\s+/g, ' ').trim();
+      const originalEquation = formattedInput;
+      const toggleSwitch = document.getElementById('toggle-switch');
+      isDetailedMode = !toggleSwitch.checked;
+      if (isDetailedMode) addStep(originalEquation, "Az eredeti egyenlet.");
+      const expandedEquation = addExpansionSteps(originalEquation);
+      const parts = expandedEquation.split(' = ');
+      if (parts.length !== 2) {
+        container.innerHTML = `<div class="error-box">Hibás formátum. Kérjük, adjon meg egy érvényes egyenletet.</div>`;
+        return;
+      }
+      let leftSide = parseSide(parts[0]);
+      let rightSide = parseSide(parts[1]);
+      if (rightSide.xCoeff !== 0) {
+        const termToMove = -rightSide.xCoeff;
+        const operationText = `Az x-es tagokat az egyenlet bal oldalára mozgatjuk.`;
+        if (isDetailedMode) {
+          addStep(
+            `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}  /  ${termToMove > 0 ? '+' : ''}${termToMove}x`,
+            operationText
+          );
+        }
+        leftSide.xCoeff += termToMove;
+        rightSide.xCoeff += termToMove;
+        if (isDetailedMode) {
+          addStep(
+            `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}`,
+            `Az egynemű tagok összevonása után.`
+          );
+        }
+      }
+      if (leftSide.constant !== 0) {
+        const termToMove = -leftSide.constant;
+        const operationText = `A számokat az egyenlet jobb oldalára mozgatjuk.`;
+        if (isDetailedMode) {
+          addStep(
+            `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}  /  ${termToMove > 0 ? '+' : ''}${termToMove}`,
+            operationText
+          );
+        }
+        rightSide.constant += termToMove;
+        leftSide.constant += termToMove;
+        if (isDetailedMode) {
+          addStep(
+            `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}`,
+            `Az egynemű tagok összevonása után.`
+          );
+        }
+      }
+      if (leftSide.xCoeff === 0) {
+        if (rightSide.constant === 0) {
+          const explanationText = `Az egyenlet mindkét oldala megegyezik. Ez azt jelenti, hogy az egyenletnek végtelen sok megoldása van.`;
+          isDetailedMode ? addStep(`0 = 0`, explanationText) : addFinalResult("Végtelen sok megoldás");
+        } else {
+          const explanationText = `Az egyenlet érvénytelen, mivel 0 nem egyenlő ${rightSide.constant}-nal. Nincs megoldás.`;
+          isDetailedMode ? addStep(`0 = ${rightSide.constant}`, explanationText) : addFinalResult("Nincs megoldás");
+        }
+        return;
+      }
+      const solution = rightSide.constant / leftSide.xCoeff;
+      const explanationText = `Elosztjuk mindkét oldalt az x együtthatójával (${leftSide.xCoeff}), hogy megkapjuk az x értékét.`;
+      if (isDetailedMode) {
+        addStep(
+          `${formatEquation(leftSide.xCoeff, leftSide.constant)}  =  ${formatEquation(rightSide.xCoeff, rightSide.constant)}  /  ${leftSide.xCoeff}`,
+          explanationText
+        );
+        addStep(
+          `x = ${solution}`,
+          "Az egyenlet megoldása."
+        );
+      } else {
+        addFinalResult(solution);
+      }
+      addVerification(originalEquation, solution);
+    }
+  </script>
 </body>
 </html>
-
